@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: bandmanager-postgres
+
+    environment:
+      POSTGRES_DB: bandmanager_db
+      POSTGRES_USER: bandmanager_user
+      POSTGRES_PASSWORD: "12345"
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - bandmanager_postgres_data:/var/lib/postgresql
+
+volumes:
+  bandmanager_postgres_data:
