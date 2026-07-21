@@ -33,4 +33,12 @@ public class Band extends AbstractEntity {
     )
     @Column(name = "genre", nullable = false, length = 50)
     private Set<String> genres = new HashSet<>();
+
+    public void addGenre(String genre) {
+        genres.add(genre);
+    }
+
+    public void removeGenre(String genre) {
+        genres.remove(genre);
+    }
 }
