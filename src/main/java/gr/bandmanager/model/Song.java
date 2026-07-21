@@ -2,9 +2,7 @@ package gr.bandmanager.model;
 
 import gr.bandmanager.model.enums.SongStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,4 +37,17 @@ public class Song extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "band_id", nullable = false)
     private Band band;
+
+    @Min(1)
+    @Max(400)
+    @Column(name = "bpm")
+    private Integer bpm;
+
+    @Size(max = 20)
+    @Column(name = "song_key", length = 20)
+    private String songKey;
+
+    @Positive
+    @Column(name = "duration_seconds")
+    private Integer durationSeconds;
 }
