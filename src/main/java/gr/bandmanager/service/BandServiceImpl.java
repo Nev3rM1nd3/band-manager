@@ -2,6 +2,7 @@ package gr.bandmanager.service;
 
 import gr.bandmanager.dto.BandInsertDTO;
 import gr.bandmanager.dto.BandReadOnlyDTO;
+import gr.bandmanager.dto.BandUpdateDTO;
 import gr.bandmanager.exception.BandNotFoundException;
 import gr.bandmanager.mapper.Mapper;
 import gr.bandmanager.model.Band;
@@ -44,5 +45,18 @@ public class BandServiceImpl implements IBandService {
                 .stream()
                 .map(mapper::mapToBandReadOnlyDTO)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public BandReadOnlyDTO updateBand(UUID id, BandUpdateDTO dto) {
+        Band band = bandRepository.findById(id)
+                .orElseThrow(() -> new BandNotFoundException(id));
+
+        mapper.updateBandFromDTO(dto, band);
+
+        Band updatedBand = bandRepository.save(band);
+
+        return mapper.mapToBandReadOnlyDTO(updatedBand);
     }
 }

@@ -2,6 +2,7 @@ package gr.bandmanager.api;
 
 import gr.bandmanager.dto.BandInsertDTO;
 import gr.bandmanager.dto.BandReadOnlyDTO;
+import gr.bandmanager.dto.BandUpdateDTO;
 import gr.bandmanager.service.IBandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,14 @@ public class BandRestController {
         return ResponseEntity.ok(
                 bandService.getAllBands()
         );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BandReadOnlyDTO> updateBand(
+            @PathVariable UUID id,
+            @Valid @RequestBody BandUpdateDTO dto
+    ) {
+        return ResponseEntity.ok(bandService.updateBand(id, dto));
     }
 
 }

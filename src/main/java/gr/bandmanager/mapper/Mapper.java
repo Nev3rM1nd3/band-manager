@@ -2,6 +2,7 @@ package gr.bandmanager.mapper;
 
 import gr.bandmanager.dto.BandInsertDTO;
 import gr.bandmanager.dto.BandReadOnlyDTO;
+import gr.bandmanager.dto.BandUpdateDTO;
 import gr.bandmanager.model.Band;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +11,6 @@ public class Mapper {
 
     public Band mapToBandEntity(BandInsertDTO dto) {
         Band band = new Band();
-
         band.setName(dto.name());
         band.setDescription(dto.description());
 
@@ -30,5 +30,15 @@ public class Mapper {
                 band.getCreatedAt(),
                 band.getUpdatedAt()
         );
+    }
+
+    public void updateBandFromDTO(BandUpdateDTO dto, Band band) {
+        band.setName(dto.name());
+        band.setDescription(dto.description());
+        band.getGenres().clear();
+
+        if (dto.genres() != null) {
+            dto.genres().forEach(band::addGenre);
+        }
     }
 }
