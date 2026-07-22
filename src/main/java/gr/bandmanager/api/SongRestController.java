@@ -2,6 +2,7 @@ package gr.bandmanager.api;
 
 import gr.bandmanager.dto.SongInsertDTO;
 import gr.bandmanager.dto.SongReadOnlyDTO;
+import gr.bandmanager.dto.SongUpdateDTO;
 import gr.bandmanager.service.ISongService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +53,19 @@ public class SongRestController {
             @RequestParam String title
     ) {
         return ResponseEntity.ok(songService.searchSongsByTitle(bandId, title));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SongReadOnlyDTO> updateSong(
+            @PathVariable UUID id,
+            @Valid @RequestBody SongUpdateDTO dto) {
+
+        return ResponseEntity.ok(songService.updateSong(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSong(@PathVariable UUID id) {
+        songService.deleteSong(id);
+        return ResponseEntity.noContent().build();
     }
 }

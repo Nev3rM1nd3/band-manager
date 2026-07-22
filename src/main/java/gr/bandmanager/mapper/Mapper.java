@@ -72,4 +72,14 @@ public class Mapper {
                 song.getUpdatedAt()
         );
     }
+
+    public void updateSongFromDTO(SongUpdateDTO dto, Song song) {
+        song.setTitle(dto.title());
+        song.setArtist(dto.artist());
+        song.setSongStatus(dto.songStatus());
+        song.setNotes(dto.notes());
+        song.setBpm(dto.bpm());
+        song.setSongKey(dto.songKey());
+        song.setDurationSeconds(dto.durationSeconds());
+    }
 }

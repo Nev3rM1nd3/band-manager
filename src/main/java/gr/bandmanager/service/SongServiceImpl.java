@@ -2,6 +2,7 @@ package gr.bandmanager.service;
 
 import gr.bandmanager.dto.SongInsertDTO;
 import gr.bandmanager.dto.SongReadOnlyDTO;
+import gr.bandmanager.dto.SongUpdateDTO;
 import gr.bandmanager.exception.BandNotFoundException;
 import gr.bandmanager.exception.SongNotFoundException;
 import gr.bandmanager.mapper.Mapper;
@@ -62,5 +63,27 @@ public class SongServiceImpl implements ISongService {
                 .stream()
                 .map(mapper::mapToSongReadOnlyDTO)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public SongReadOnlyDTO updateSong(UUID id, SongUpdateDTO dto) {
+        Song song = songRepository.findById(id)
+                .orElseThrow(() -> new SongNotFoundException(id));
+
+        mapper.updateSongFromDTO(dto, song);
+
+        Song updatedSong = songRepository.save(song);
+
+        return mapper.mapToSongReadOnlyDTO(updatedSong);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSong(UUID id) {
+        Song song = songRepository.findById(id)
+                .orElseThrow(() -> new SongNotFoundException(id));
+
+        songRepository.delete(song);
     }
 }
