@@ -64,4 +64,13 @@ public class BandRestController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BandReadOnlyDTO>> searchBandsByName(
+            @RequestParam String name
+    ){
+        return ResponseEntity.ok(
+                bandService.searchBandsByName(name)
+        );
+    }
 }

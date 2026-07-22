@@ -18,4 +18,6 @@ public interface IBandService {
     BandReadOnlyDTO updateBand(UUID id, BandUpdateDTO dto);
 
     void deleteBand(UUID id);
+
+    List<BandReadOnlyDTO> searchBandsByName(String name);
 }

@@ -68,4 +68,13 @@ public class BandServiceImpl implements IBandService {
 
         bandRepository.delete(band);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BandReadOnlyDTO> searchBandsByName(String name) {
+        return bandRepository.findByNameContainingIgnoreCase(name)
+                .stream()
+                .map(mapper::mapToBandReadOnlyDTO)
+                .toList();
+    }
 }
