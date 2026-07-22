@@ -36,16 +36,12 @@ public class BandRestController {
     public ResponseEntity<BandReadOnlyDTO> getBandById(
             @PathVariable UUID id
     ) {
-        return ResponseEntity.ok(
-                bandService.getBandById(id)
-        );
+        return ResponseEntity.ok(bandService.getBandById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<BandReadOnlyDTO>> getAllBands() {
-        return ResponseEntity.ok(
-                bandService.getAllBands()
-        );
+        return ResponseEntity.ok(bandService.getAllBands());
     }
 
     @PutMapping("/{id}")
@@ -69,8 +65,6 @@ public class BandRestController {
     public ResponseEntity<List<BandReadOnlyDTO>> searchBandsByName(
             @RequestParam String name
     ){
-        return ResponseEntity.ok(
-                bandService.searchBandsByName(name)
-        );
+        return ResponseEntity.ok(bandService.searchBandsByName(name));
     }
 }
