@@ -16,4 +16,6 @@ public interface IBandService {
     List<BandReadOnlyDTO> getAllBands();
 
     BandReadOnlyDTO updateBand(UUID id, BandUpdateDTO dto);
+
+    void deleteBand(UUID id);
 }

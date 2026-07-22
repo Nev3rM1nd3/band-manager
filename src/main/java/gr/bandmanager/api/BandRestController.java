@@ -56,4 +56,12 @@ public class BandRestController {
         return ResponseEntity.ok(bandService.updateBand(id, dto));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBand(
+            @PathVariable UUID id
+    ) {
+        bandService.deleteBand(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -59,4 +59,13 @@ public class BandServiceImpl implements IBandService {
 
         return mapper.mapToBandReadOnlyDTO(updatedBand);
     }
+
+    @Override
+    @Transactional
+    public void deleteBand(UUID id) {
+        Band band = bandRepository.findById(id)
+                .orElseThrow(() -> new BandNotFoundException(id));
+
+        bandRepository.delete(band);
+    }
 }
