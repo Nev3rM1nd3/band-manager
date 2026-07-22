@@ -13,7 +13,11 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/bands/**").permitAll()
+                        .requestMatchers(
+                                "/api/bands/**",
+                                "/api/songs/**",
+                                "/error"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();

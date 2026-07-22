@@ -62,4 +62,23 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body(apiError);
     }
+
+    @ExceptionHandler(SongNotFoundException.class)
+    public ResponseEntity<ApiError> handleSongNotFoundException(
+            SongNotFoundException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = new ApiError(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(apiError);
+    }
 }
