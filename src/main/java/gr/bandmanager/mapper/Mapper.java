@@ -3,6 +3,8 @@ package gr.bandmanager.mapper;
 import gr.bandmanager.dto.*;
 import gr.bandmanager.model.Band;
 import gr.bandmanager.model.Song;
+import gr.bandmanager.model.User;
+import gr.bandmanager.model.enums.ApplicationRole;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -81,5 +83,27 @@ public class Mapper {
         song.setBpm(dto.bpm());
         song.setSongKey(dto.songKey());
         song.setDurationSeconds(dto.durationSeconds());
+    }
+
+    public User mapToUserEntity(UserRegisterDTO dto) {
+        User user = new User();
+        user.setFirstname(dto.firstname());
+        user.setLastname(dto.lastname());
+        user.setEmail(dto.email());
+        user.setPassword(dto.password());
+        user.setApplicationRole(ApplicationRole.ROLE_USER);
+        user.setEnabled(true);
+        return user;
+    }
+
+    public UserReadOnlyDTO mapToUserReadOnlyDTO(User user) {
+        return new UserReadOnlyDTO(
+                user.getId(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getEmail(),
+                user.getApplicationRole(),
+                user.isEnabled()
+        );
     }
 }
