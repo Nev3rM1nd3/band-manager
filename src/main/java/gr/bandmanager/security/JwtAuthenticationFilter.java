@@ -1,5 +1,6 @@
 package gr.bandmanager.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,32 +41,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwtToken = authorizationHeader.substring(7);
-        String email = jwtService.extractUsername(jwtToken);
+        try {
+            String jwtToken = authorizationHeader.substring(7);
+            String email = jwtService.extractUsername(jwtToken);
 
-        if (email != null
-                && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (email != null
+                    && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails =
-                    customUserDetailsService.loadUserByUsername(email);
+                UserDetails userDetails =
+                        customUserDetailsService.loadUserByUsername(email);
 
-            if (jwtService.isTokenValid(jwtToken, userDetails)) {
+                if (jwtService.isTokenValid(jwtToken, userDetails)) {
 
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
 
-                authenticationToken.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request)
-                );
+                    authenticationToken.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
 
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authenticationToken);
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authenticationToken);
+                }
             }
+        } catch (JwtException | IllegalArgumentException exception) {
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

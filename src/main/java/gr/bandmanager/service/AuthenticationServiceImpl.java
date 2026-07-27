@@ -3,6 +3,7 @@ package gr.bandmanager.service;
 import gr.bandmanager.dto.AuthResponseDTO;
 import gr.bandmanager.dto.UserLoginDTO;
 import gr.bandmanager.dto.UserRegisterDTO;
+import gr.bandmanager.exception.EmailAlreadyExistsException;
 import gr.bandmanager.mapper.Mapper;
 import gr.bandmanager.model.User;
 import gr.bandmanager.repository.UserRepository;
@@ -32,9 +33,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     public AuthResponseDTO register(UserRegisterDTO dto) {
 
         if (userRepository.existsByEmail(dto.email())) {
-            throw new IllegalArgumentException(
-                    "Email already registered: " + dto.email()
-            );
+            throw new EmailAlreadyExistsException(dto.email());
         }
 
         User user = mapper.mapToUserEntity(dto);
