@@ -157,4 +157,42 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(apiError);
     }
+
+    @ExceptionHandler(RehearsalSongNotFoundException.class)
+    public ResponseEntity<ApiError> handleRehearsalSongNotFoundException(
+            RehearsalSongNotFoundException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = new ApiError(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(apiError);
+    }
+
+    @ExceptionHandler(RehearsalSongAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleRehearsalSongAlreadyExistsException(
+            RehearsalSongAlreadyExistsException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = new ApiError(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(apiError);
+    }
 }
