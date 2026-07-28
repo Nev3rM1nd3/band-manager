@@ -195,4 +195,23 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(apiError);
     }
+
+    @ExceptionHandler(SongDoesNotBelongToRehearsalBandException.class)
+    public ResponseEntity<ApiError> handleSongDoesNotBelongToRehearsalBandException(
+            SongDoesNotBelongToRehearsalBandException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = new ApiError(
+                Instant.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(apiError);
+    }
 }

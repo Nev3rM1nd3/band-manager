@@ -3,10 +3,7 @@ package gr.bandmanager.service;
 import gr.bandmanager.dto.RehearsalSongInsertDTO;
 import gr.bandmanager.dto.RehearsalSongReadOnlyDTO;
 import gr.bandmanager.dto.RehearsalSongUpdateDTO;
-import gr.bandmanager.exception.RehearsalNotFoundException;
-import gr.bandmanager.exception.RehearsalSongAlreadyExistsException;
-import gr.bandmanager.exception.RehearsalSongNotFoundException;
-import gr.bandmanager.exception.SongNotFoundException;
+import gr.bandmanager.exception.*;
 import gr.bandmanager.mapper.Mapper;
 import gr.bandmanager.model.Rehearsal;
 import gr.bandmanager.model.RehearsalSong;
@@ -44,6 +41,10 @@ public class RehearsalSongServiceImpl implements IRehearsalSongService {
                 .orElseThrow(() ->
                         new SongNotFoundException(dto.songId())
                 );
+
+        if (!rehearsal.getBand().getId().equals(song.getBand().getId())) {
+            throw new SongDoesNotBelongToRehearsalBandException();
+        }
 
         if (rehearsalSongRepository.existsByRehearsalIdAndSongId(
                 dto.rehearsalId(),
