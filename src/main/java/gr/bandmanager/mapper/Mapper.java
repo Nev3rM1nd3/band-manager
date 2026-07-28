@@ -1,10 +1,7 @@
 package gr.bandmanager.mapper;
 
 import gr.bandmanager.dto.*;
-import gr.bandmanager.model.Band;
-import gr.bandmanager.model.BandMember;
-import gr.bandmanager.model.Song;
-import gr.bandmanager.model.User;
+import gr.bandmanager.model.*;
 import gr.bandmanager.model.enums.ApplicationRole;
 import org.springframework.stereotype.Component;
 
@@ -169,5 +166,48 @@ public class Mapper {
         if (dto.instruments() != null) {
             dto.instruments().forEach(bandMember::addInstrument);
         }
+    }
+
+    public Rehearsal mapToRehearsalEntity(
+            RehearsalInsertDTO dto,
+            Band band
+    ) {
+        Rehearsal rehearsal = new Rehearsal();
+
+        rehearsal.setStartsAt(dto.startsAt());
+        rehearsal.setEndsAt(dto.endsAt());
+        rehearsal.setLocation(dto.location());
+        rehearsal.setNotes(dto.notes());
+        rehearsal.setBand(band);
+
+        return rehearsal;
+    }
+
+    public RehearsalReadOnlyDTO mapToRehearsalReadOnlyDTO(
+            Rehearsal rehearsal
+    ) {
+        return new RehearsalReadOnlyDTO(
+                rehearsal.getId(),
+                rehearsal.getStartsAt(),
+                rehearsal.getEndsAt(),
+                rehearsal.getLocation(),
+                rehearsal.getNotes(),
+
+                rehearsal.getBand().getId(),
+                rehearsal.getBand().getName(),
+
+                rehearsal.getCreatedAt(),
+                rehearsal.getUpdatedAt()
+        );
+    }
+
+    public void updateRehearsalFromDTO(
+            RehearsalUpdateDTO dto,
+            Rehearsal rehearsal
+    ) {
+        rehearsal.setStartsAt(dto.startsAt());
+        rehearsal.setEndsAt(dto.endsAt());
+        rehearsal.setLocation(dto.location());
+        rehearsal.setNotes(dto.notes());
     }
 }
