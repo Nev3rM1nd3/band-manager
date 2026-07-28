@@ -210,4 +210,48 @@ public class Mapper {
         rehearsal.setLocation(dto.location());
         rehearsal.setNotes(dto.notes());
     }
+
+    public RehearsalSong mapToRehearsalSongEntity(
+            RehearsalSongInsertDTO dto,
+            Rehearsal rehearsal,
+            Song song
+    ) {
+        RehearsalSong rehearsalSong = new RehearsalSong();
+
+        rehearsalSong.setRehearsal(rehearsal);
+        rehearsalSong.setSong(song);
+        rehearsalSong.setRehearsalSongStatus(dto.rehearsalSongStatus());
+        rehearsalSong.setNotes(dto.notes());
+
+        return rehearsalSong;
+    }
+
+    public RehearsalSongReadOnlyDTO mapToRehearsalSongReadOnlyDTO(
+            RehearsalSong rehearsalSong
+    ) {
+        return new RehearsalSongReadOnlyDTO(
+                rehearsalSong.getId(),
+
+                rehearsalSong.getRehearsal().getId(),
+                rehearsalSong.getRehearsal().getStartsAt(),
+
+                rehearsalSong.getSong().getId(),
+                rehearsalSong.getSong().getTitle(),
+                rehearsalSong.getSong().getArtist(),
+
+                rehearsalSong.getRehearsalSongStatus(),
+                rehearsalSong.getNotes(),
+
+                rehearsalSong.getCreatedAt(),
+                rehearsalSong.getUpdatedAt()
+        );
+    }
+
+    public void updateRehearsalSongFromDTO(
+            RehearsalSongUpdateDTO dto,
+            RehearsalSong rehearsalSong
+    ) {
+        rehearsalSong.setRehearsalSongStatus(dto.rehearsalSongStatus());
+        rehearsalSong.setNotes(dto.notes());
+    }
 }
