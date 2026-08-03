@@ -3,6 +3,7 @@ package gr.bandmanager.service;
 import gr.bandmanager.dto.SongInsertDTO;
 import gr.bandmanager.dto.SongReadOnlyDTO;
 import gr.bandmanager.dto.SongUpdateDTO;
+import gr.bandmanager.exception.BandAccessDeniedException;
 import gr.bandmanager.exception.BandNotFoundException;
 import gr.bandmanager.exception.SongNotFoundException;
 import gr.bandmanager.mapper.Mapper;
@@ -24,12 +25,17 @@ public class SongServiceImpl implements ISongService {
     private final SongRepository songRepository;
     private final BandRepository bandRepository;
     private final Mapper mapper;
+    private final IBandAccessService bandAccessService;
 
     @Override
     @Transactional
     public SongReadOnlyDTO createSong(SongInsertDTO dto) {
         Band band = bandRepository.findById(dto.bandId())
                 .orElseThrow(() -> new BandNotFoundException(dto.bandId()));
+
+        if (!bandAccessService.isCurrentUserOwnerOfBand(dto.bandId())) {
+            throw new BandAccessDeniedException();
+        }
 
         Song song = mapper.mapToSongEntity(dto, band);
         Song savedSong = songRepository.save(song);
@@ -43,12 +49,23 @@ public class SongServiceImpl implements ISongService {
         Song song = songRepository.findById(id)
                 .orElseThrow(() -> new SongNotFoundException(id));
 
+        if (!bandAccessService.isCurrentUserMemberOfBand(
+                song.getBand().getId()
+        )) {
+            throw new BandAccessDeniedException();
+        }
+
         return mapper.mapToSongReadOnlyDTO(song);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SongReadOnlyDTO> getSongsByBandId(UUID bandId) {
+
+        if (!bandAccessService.isCurrentUserMemberOfBand(bandId)) {
+            throw new BandAccessDeniedException();
+        }
+
         return songRepository.findByBandId(bandId)
                 .stream()
                 .map(mapper::mapToSongReadOnlyDTO)
@@ -57,7 +74,14 @@ public class SongServiceImpl implements ISongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongReadOnlyDTO> searchSongsByTitle(UUID bandId, String title) {
+    public List<SongReadOnlyDTO> searchSongsByTitle(
+            UUID bandId,
+            String title
+    ) {
+        if (!bandAccessService.isCurrentUserMemberOfBand(bandId)) {
+            throw new BandAccessDeniedException();
+        }
+
         return songRepository
                 .findByBandIdAndTitleContainingIgnoreCase(bandId, title)
                 .stream()
@@ -71,6 +95,12 @@ public class SongServiceImpl implements ISongService {
         Song song = songRepository.findById(id)
                 .orElseThrow(() -> new SongNotFoundException(id));
 
+        if (!bandAccessService.isCurrentUserOwnerOfBand(
+                song.getBand().getId()
+        )) {
+            throw new BandAccessDeniedException();
+        }
+
         mapper.updateSongFromDTO(dto, song);
 
         Song updatedSong = songRepository.save(song);
@@ -83,6 +113,12 @@ public class SongServiceImpl implements ISongService {
     public void deleteSong(UUID id) {
         Song song = songRepository.findById(id)
                 .orElseThrow(() -> new SongNotFoundException(id));
+
+        if (!bandAccessService.isCurrentUserOwnerOfBand(
+                song.getBand().getId()
+        )) {
+            throw new BandAccessDeniedException();
+        }
 
         songRepository.delete(song);
     }
