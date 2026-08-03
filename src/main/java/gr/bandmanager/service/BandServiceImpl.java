@@ -3,9 +3,14 @@ package gr.bandmanager.service;
 import gr.bandmanager.dto.BandInsertDTO;
 import gr.bandmanager.dto.BandReadOnlyDTO;
 import gr.bandmanager.dto.BandUpdateDTO;
+import gr.bandmanager.exception.BandAccessDeniedException;
 import gr.bandmanager.exception.BandNotFoundException;
 import gr.bandmanager.mapper.Mapper;
 import gr.bandmanager.model.Band;
+import gr.bandmanager.model.BandMember;
+import gr.bandmanager.model.User;
+import gr.bandmanager.model.enums.BandRole;
+import gr.bandmanager.repository.BandMemberRepository;
 import gr.bandmanager.repository.BandRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,12 +25,28 @@ public class BandServiceImpl implements IBandService {
 
     private final BandRepository bandRepository;
     private final Mapper mapper;
+    private final IBandAccessService bandAccessService;
+    private final BandMemberRepository bandMemberRepository;
+    private final ICurrentUserService currentUserService;
 
     @Override
     @Transactional
     public BandReadOnlyDTO createBand(BandInsertDTO dto) {
+
+        User currentUser = currentUserService.getCurrentUser();
+
         Band band = mapper.mapToBandEntity(dto);
         Band savedBand = bandRepository.save(band);
+
+        BandMember owner = new BandMember();
+        owner.setFirstname(currentUser.getFirstname());
+        owner.setLastname(currentUser.getLastname());
+        owner.setPosition("Owner");
+        owner.setBandRole(BandRole.OWNER);
+        owner.setBand(savedBand);
+        owner.setUser(currentUser);
+
+        bandMemberRepository.save(owner);
 
         return mapper.mapToBandReadOnlyDTO(savedBand);
     }
@@ -35,14 +56,23 @@ public class BandServiceImpl implements IBandService {
     public BandReadOnlyDTO getBandById(UUID id) {
         Band band = bandRepository.findById(id)
                 .orElseThrow(() -> new BandNotFoundException(id));
+
+        if (!bandAccessService.isCurrentUserMemberOfBand(id)) {
+            throw new BandAccessDeniedException();
+        }
+
         return mapper.mapToBandReadOnlyDTO(band);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BandReadOnlyDTO> getAllBands() {
-        return bandRepository.findAll()
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        return bandMemberRepository.findByUserId(currentUser.getId())
                 .stream()
+                .map(bandMember -> bandMember.getBand())
                 .map(mapper::mapToBandReadOnlyDTO)
                 .toList();
     }
@@ -52,6 +82,10 @@ public class BandServiceImpl implements IBandService {
     public BandReadOnlyDTO updateBand(UUID id, BandUpdateDTO dto) {
         Band band = bandRepository.findById(id)
                 .orElseThrow(() -> new BandNotFoundException(id));
+
+        if (!bandAccessService.isCurrentUserOwnerOfBand(id)) {
+            throw new BandAccessDeniedException();
+        }
 
         mapper.updateBandFromDTO(dto, band);
 
@@ -65,6 +99,10 @@ public class BandServiceImpl implements IBandService {
     public void deleteBand(UUID id) {
         Band band = bandRepository.findById(id)
                 .orElseThrow(() -> new BandNotFoundException(id));
+
+        if (!bandAccessService.isCurrentUserOwnerOfBand(id)) {
+            throw new BandAccessDeniedException();
+        }
 
         bandRepository.delete(band);
     }
