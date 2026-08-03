@@ -1,6 +1,7 @@
 package gr.bandmanager.repository;
 
 import gr.bandmanager.model.BandMember;
+import gr.bandmanager.model.enums.BandRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,4 +14,15 @@ public interface BandMemberRepository extends JpaRepository<BandMember, UUID> {
     List<BandMember> findByUserId(UUID userId);
 
     List<BandMember> findByUserIsNull();
+
+    boolean existsByBandIdAndUserId(
+            UUID bandId,
+            UUID userId
+    );
+
+    boolean existsByBandIdAndUserIdAndBandRole(
+            UUID bandId,
+            UUID userId,
+            BandRole bandRole
+    );
 }
