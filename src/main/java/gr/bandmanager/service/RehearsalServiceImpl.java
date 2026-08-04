@@ -3,6 +3,7 @@ package gr.bandmanager.service;
 import gr.bandmanager.dto.RehearsalInsertDTO;
 import gr.bandmanager.dto.RehearsalReadOnlyDTO;
 import gr.bandmanager.dto.RehearsalUpdateDTO;
+import gr.bandmanager.exception.BandAccessDeniedException;
 import gr.bandmanager.exception.BandNotFoundException;
 import gr.bandmanager.exception.RehearsalNotFoundException;
 import gr.bandmanager.mapper.Mapper;
@@ -24,6 +25,7 @@ public class RehearsalServiceImpl implements IRehearsalService {
     private final RehearsalRepository rehearsalRepository;
     private final BandRepository bandRepository;
     private final Mapper mapper;
+    private final IBandAccessService bandAccessService;
 
     @Override
     @Transactional
@@ -31,6 +33,10 @@ public class RehearsalServiceImpl implements IRehearsalService {
 
         Band band = bandRepository.findById(dto.bandId())
                 .orElseThrow(() -> new BandNotFoundException(dto.bandId()));
+
+        if (!bandAccessService.isCurrentUserOwnerOfBand(dto.bandId())) {
+            throw new BandAccessDeniedException();
+        }
 
         Rehearsal rehearsal =
                 mapper.mapToRehearsalEntity(dto, band);
@@ -48,12 +54,22 @@ public class RehearsalServiceImpl implements IRehearsalService {
         Rehearsal rehearsal = rehearsalRepository.findById(id)
                 .orElseThrow(() -> new RehearsalNotFoundException(id));
 
+        if (!bandAccessService.isCurrentUserMemberOfBand(
+                rehearsal.getBand().getId()
+        )) {
+            throw new BandAccessDeniedException();
+        }
+
         return mapper.mapToRehearsalReadOnlyDTO(rehearsal);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RehearsalReadOnlyDTO> getRehearsalsByBandId(UUID bandId) {
+
+        if (!bandAccessService.isCurrentUserMemberOfBand(bandId)) {
+            throw new BandAccessDeniedException();
+        }
 
         return rehearsalRepository.findByBandIdOrderByStartsAtAsc(bandId)
                 .stream()
@@ -70,6 +86,12 @@ public class RehearsalServiceImpl implements IRehearsalService {
         Rehearsal rehearsal = rehearsalRepository.findById(id)
                 .orElseThrow(() -> new RehearsalNotFoundException(id));
 
+        if (!bandAccessService.isCurrentUserOwnerOfBand(
+                rehearsal.getBand().getId()
+        )) {
+            throw new BandAccessDeniedException();
+        }
+
         mapper.updateRehearsalFromDTO(dto, rehearsal);
 
         Rehearsal updatedRehearsal =
@@ -84,6 +106,12 @@ public class RehearsalServiceImpl implements IRehearsalService {
 
         Rehearsal rehearsal = rehearsalRepository.findById(id)
                 .orElseThrow(() -> new RehearsalNotFoundException(id));
+
+        if (!bandAccessService.isCurrentUserOwnerOfBand(
+                rehearsal.getBand().getId()
+        )) {
+            throw new BandAccessDeniedException();
+        }
 
         rehearsalRepository.delete(rehearsal);
     }
