@@ -15,6 +15,10 @@ public interface IRehearsalService {
 
     List<RehearsalReadOnlyDTO> getRehearsalsByBandId(UUID bandId);
 
+    List<RehearsalReadOnlyDTO> getUpcomingRehearsalsByBandId(
+            UUID bandId
+    );
+
     RehearsalReadOnlyDTO updateRehearsal(
             UUID id,
             RehearsalUpdateDTO dto

@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,6 +73,25 @@ public class RehearsalServiceImpl implements IRehearsalService {
         }
 
         return rehearsalRepository.findByBandIdOrderByStartsAtAsc(bandId)
+                .stream()
+                .map(mapper::mapToRehearsalReadOnlyDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RehearsalReadOnlyDTO> getUpcomingRehearsalsByBandId(
+            UUID bandId
+    ) {
+        if (!bandAccessService.isCurrentUserMemberOfBand(bandId)) {
+            throw new BandAccessDeniedException();
+        }
+
+        return rehearsalRepository
+                .findByBandIdAndStartsAtAfterOrderByStartsAtAsc(
+                        bandId,
+                        Instant.now()
+                )
                 .stream()
                 .map(mapper::mapToRehearsalReadOnlyDTO)
                 .toList();

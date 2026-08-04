@@ -9,8 +9,6 @@ import java.util.UUID;
 
 public interface RehearsalRepository extends JpaRepository<Rehearsal, UUID> {
 
-    List<Rehearsal> findByBandId(UUID bandId);
-
     List<Rehearsal> findByBandIdOrderByStartsAtAsc(UUID bandId);
 
     List<Rehearsal> findByBandIdAndStartsAtAfterOrderByStartsAtAsc(

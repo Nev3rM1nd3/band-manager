@@ -73,6 +73,20 @@ public class RehearsalController {
     }
 
     @Operation(
+            summary = "Get upcoming rehearsals by band",
+            description = "Returns upcoming rehearsals of a band if the current user belongs to it"
+    )
+    @GetMapping("/band/{bandId}/upcoming")
+    public ResponseEntity<List<RehearsalReadOnlyDTO>>
+    getUpcomingRehearsalsByBandId(
+            @PathVariable UUID bandId
+    ) {
+        return ResponseEntity.ok(
+                rehearsalService.getUpcomingRehearsalsByBandId(bandId)
+        );
+    }
+
+    @Operation(
             summary = "Update a rehearsal",
             description = "Updates a rehearsal. Only the band owner is allowed"
     )
