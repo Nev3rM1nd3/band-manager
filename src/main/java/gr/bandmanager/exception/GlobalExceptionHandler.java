@@ -233,4 +233,23 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(apiError);
     }
+
+    @ExceptionHandler(LastBandOwnerException.class)
+    public ResponseEntity<ApiError> handleLastBandOwnerException(
+            LastBandOwnerException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = new ApiError(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(apiError);
+    }
 }

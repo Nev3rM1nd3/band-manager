@@ -3,14 +3,12 @@ package gr.bandmanager.service;
 import gr.bandmanager.dto.BandMemberInsertDTO;
 import gr.bandmanager.dto.BandMemberReadOnlyDTO;
 import gr.bandmanager.dto.BandMemberUpdateDTO;
-import gr.bandmanager.exception.BandAccessDeniedException;
-import gr.bandmanager.exception.BandMemberNotFoundException;
-import gr.bandmanager.exception.BandNotFoundException;
-import gr.bandmanager.exception.UserNotFoundException;
+import gr.bandmanager.exception.*;
 import gr.bandmanager.mapper.Mapper;
 import gr.bandmanager.model.Band;
 import gr.bandmanager.model.BandMember;
 import gr.bandmanager.model.User;
+import gr.bandmanager.model.enums.BandRole;
 import gr.bandmanager.repository.BandMemberRepository;
 import gr.bandmanager.repository.BandRepository;
 import gr.bandmanager.repository.UserRepository;
@@ -103,6 +101,20 @@ public class BandMemberServiceImpl implements IBandMemberService {
             throw new BandAccessDeniedException();
         }
 
+        if (
+                bandMember.getBandRole() == BandRole.OWNER
+                        && dto.bandRole() == BandRole.MEMBER
+        ) {
+            long ownerCount = bandMemberRepository.countByBandIdAndBandRole(
+                    bandMember.getBand().getId(),
+                    BandRole.OWNER
+            );
+
+            if (ownerCount <= 1) {
+                throw new LastBandOwnerException();
+            }
+        }
+
         mapper.updateBandMemberFromDTO(dto, bandMember);
 
         BandMember updatedBandMember =
@@ -122,6 +134,17 @@ public class BandMemberServiceImpl implements IBandMemberService {
                 bandMember.getBand().getId()
         )) {
             throw new BandAccessDeniedException();
+        }
+
+        if (bandMember.getBandRole() == BandRole.OWNER) {
+            long ownerCount = bandMemberRepository.countByBandIdAndBandRole(
+                    bandMember.getBand().getId(),
+                    BandRole.OWNER
+            );
+
+            if (ownerCount <= 1) {
+                throw new LastBandOwnerException();
+            }
         }
 
         bandMemberRepository.delete(bandMember);

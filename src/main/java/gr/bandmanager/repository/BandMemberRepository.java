@@ -25,4 +25,9 @@ public interface BandMemberRepository extends JpaRepository<BandMember, UUID> {
             UUID userId,
             BandRole bandRole
     );
+
+    long countByBandIdAndBandRole(
+            UUID bandId,
+            BandRole bandRole
+    );
 }
