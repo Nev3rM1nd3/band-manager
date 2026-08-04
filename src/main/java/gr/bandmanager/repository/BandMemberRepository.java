@@ -13,8 +13,6 @@ public interface BandMemberRepository extends JpaRepository<BandMember, UUID> {
 
     List<BandMember> findByUserId(UUID userId);
 
-    List<BandMember> findByUserIsNull();
-
     boolean existsByBandIdAndUserId(
             UUID bandId,
             UUID userId
