@@ -110,8 +110,16 @@ public class BandServiceImpl implements IBandService {
     @Override
     @Transactional(readOnly = true)
     public List<BandReadOnlyDTO> searchBandsByName(String name) {
-        return bandRepository.findByNameContainingIgnoreCase(name)
+        User currentUser = currentUserService.getCurrentUser();
+
+        return bandMemberRepository.findByUserId(currentUser.getId())
                 .stream()
+                .map(BandMember::getBand)
+                .filter(band ->
+                        band.getName()
+                                .toLowerCase()
+                                .contains(name.toLowerCase())
+                )
                 .map(mapper::mapToBandReadOnlyDTO)
                 .toList();
     }
