@@ -37,6 +37,14 @@ public class JwtService {
                 .getPayload();
     }
 
+    /**
+     * Extracts a specific claim from a JWT token.
+     *
+     * @param token the JWT token
+     * @param claimsResolver function used to extract the requested claim
+     * @param <T> the type of the extracted claim
+     * @return the extracted claim
+     */
     public <T> T extractClaim(
             String token,
             Function<Claims, T> claimsResolver
@@ -45,14 +53,32 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
+    /**
+     * Extracts the username stored as the token subject.
+     *
+     * @param token the JWT token
+     * @return the username contained in the token
+     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    /**
+     * Extracts the expiration date from a JWT token.
+     *
+     * @param token the JWT token
+     * @return the token expiration date
+     */
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    /**
+     * Generates a signed JWT token for the specified user.
+     *
+     * @param userDetails the authenticated user's details
+     * @return the generated JWT token
+     */
     public String generateToken(UserDetails userDetails) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + jwtExpiration);
@@ -65,6 +91,13 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * Validates that a token belongs to the specified user and has not expired.
+     *
+     * @param token the JWT token
+     * @param userDetails the user details to validate against
+     * @return {@code true} if the token is valid, otherwise {@code false}
+     */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String username = extractUsername(token);
 

@@ -7,6 +7,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configures the OpenAPI documentation and JWT Bearer authentication
+ * used by Swagger UI.
+ */
 @Configuration
 @OpenAPIDefinition(
         info = @Info(

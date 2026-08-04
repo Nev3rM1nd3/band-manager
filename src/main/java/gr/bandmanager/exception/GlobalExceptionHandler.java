@@ -11,6 +11,13 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Handles application exceptions globally and converts them into
+ * consistent HTTP error responses.
+ *
+ * <p>Validation errors, missing resources, authorization failures and
+ * business-rule conflicts are returned using the {@link ApiError} format.</p>
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

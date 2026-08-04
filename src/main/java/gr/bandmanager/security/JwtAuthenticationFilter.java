@@ -25,6 +25,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
 
+    /**
+     * Processes each incoming request and authenticates the user when a valid
+     * Bearer JWT token is present in the Authorization header.
+     *
+     * <p>If the token is missing, invalid or expired, the request continues
+     * without authentication and the security configuration determines whether
+     * access is allowed.</p>
+     *
+     * @param request the incoming HTTP request
+     * @param response the HTTP response
+     * @param filterChain the remaining filter chain
+     * @throws ServletException if request processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
