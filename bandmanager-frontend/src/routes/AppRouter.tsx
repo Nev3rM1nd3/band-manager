@@ -4,6 +4,8 @@ import HomePage from '../pages/HomePage'
 import LoginPage from '../pages/LoginPage'
 import RegisterPage from '../pages/RegisterPage'
 import ProtectedRoute from './ProtectedRoute'
+import BandsPage from '../pages/BandsPage'
+import CreateBandPage from '../pages/CreateBandPage'
 
 const AppRouter = () => {
   return (
@@ -11,6 +13,8 @@ const AppRouter = () => {
       <Routes>
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/bands" element={<BandsPage />} />
+          <Route path="/bands/new" element={<CreateBandPage />} />
         </Route>
 
         <Route element={<AuthLayout />}>
