@@ -41,3 +41,21 @@ export const createBand = async (
 
   return response.json()
 }
+
+export const getBandById = async (
+  token: string,
+  bandId: string,
+): Promise<Band> => {
+  const response = await fetch(`${API_BASE_URL}/bands/${bandId}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to load band')
+  }
+
+  return response.json()
+}

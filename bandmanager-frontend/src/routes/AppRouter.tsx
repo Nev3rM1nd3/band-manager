@@ -6,6 +6,7 @@ import RegisterPage from '../pages/RegisterPage'
 import ProtectedRoute from './ProtectedRoute'
 import BandsPage from '../pages/BandsPage'
 import CreateBandPage from '../pages/CreateBandPage'
+import BandDetailsPage from '../pages/BandDetailsPage'
 
 const AppRouter = () => {
   return (
@@ -15,6 +16,7 @@ const AppRouter = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/bands" element={<BandsPage />} />
           <Route path="/bands/new" element={<CreateBandPage />} />
+          <Route path="/bands/:bandId" element={<BandDetailsPage />} />
         </Route>
 
         <Route element={<AuthLayout />}>

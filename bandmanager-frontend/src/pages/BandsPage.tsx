@@ -71,9 +71,10 @@ const BandsPage = () => {
           {!isLoading && !error && bands.length > 0 && (
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {bands.map((band) => (
-                <article
+                <Link
                   key={band.id}
-                  className="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-lg"
+                  to={`/bands/${band.id}`}
+                  className="block rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-lg transition hover:border-violet-500 hover:bg-slate-800"
                 >
                   <h2 className="text-xl font-semibold">
                     {band.name}
@@ -95,7 +96,7 @@ const BandsPage = () => {
                       ))}
                     </div>
                   )}
-                </article>
+                </Link>
               ))}
             </div>
           )}
