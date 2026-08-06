@@ -59,3 +59,24 @@ export const getBandById = async (
 
   return response.json()
 }
+
+export const updateBand = async (
+  token: string,
+  bandId: string,
+  bandData: CreateBandData,
+): Promise<Band> => {
+  const response = await fetch(`${API_BASE_URL}/bands/${bandId}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(bandData),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update band')
+  }
+
+  return response.json()
+}
