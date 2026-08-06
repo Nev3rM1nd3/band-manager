@@ -3,7 +3,10 @@ import { Link, useParams } from 'react-router'
 import { getBandById } from '../api/bandsApi'
 import { useAuth } from '../context/AuthContext'
 import type { Band } from '../types/BandTypes'
-import { getBandMembers } from '../api/bandMembersApi'
+import {
+  deleteBandMember,
+  getBandMembers,
+} from '../api/bandMembersApi'
 import type { BandMember } from '../types/BandMemberTypes'
 
 const BandDetailsPage = () => {
@@ -16,6 +19,7 @@ const BandDetailsPage = () => {
   const [members, setMembers] = useState<BandMember[]>([])
   const [membersLoading, setMembersLoading] = useState(true)
   const [membersError, setMembersError] = useState('')
+  const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null)
 
   useEffect(() => {
     const loadBand = async () => {
@@ -47,6 +51,38 @@ const BandDetailsPage = () => {
 
     void loadBand()
   }, [token, bandId])
+
+  const handleDeleteMember = async (memberId: string) => {
+    if (!token) {
+      setMembersError('You are not authenticated')
+      return
+    }
+
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this band member?',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setMembersError('')
+      setDeletingMemberId(memberId)
+
+      await deleteBandMember(token, memberId)
+
+      setMembers((currentMembers) =>
+        currentMembers.filter((member) => member.id !== memberId),
+      )
+    } catch {
+      setMembersError(
+        'This member could not be deleted. The last owner must remain in the band.',
+      )
+    } finally {
+      setDeletingMemberId(null)
+    }
+  }
 
   return (
     <>
@@ -117,19 +153,13 @@ const BandDetailsPage = () => {
               </p>
             )}
 
-            {membersError && (
-              <p className="mt-4 text-red-400">
-                {membersError}
-              </p>
-            )}
-
-            {!membersLoading && !membersError && members.length === 0 && (
+            {!membersLoading && members.length === 0 && (
               <p className="mt-4 text-slate-400">
                 No members found.
               </p>
             )}
 
-            {!membersLoading && !membersError && members.length > 0 && (
+            {!membersLoading && members.length > 0 && (
               <div className="mt-6 space-y-4">
                 {members.map((member) => (
                   <article
@@ -158,8 +188,23 @@ const BandDetailsPage = () => {
                         >
                           Edit
                         </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteMember(member.id)}
+                          disabled={deletingMemberId === member.id}
+                          className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {deletingMemberId === member.id ? 'Deleting...' : 'Delete'}
+                        </button>
                       </div>
                     </div>
+
+                    {membersError && (
+                      <p className="mt-4 rounded-lg border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
+                        {membersError}
+                      </p>
+                    )}
 
                     {member.instruments.length > 0 && (
                       <p className="mt-4 text-sm text-slate-300">

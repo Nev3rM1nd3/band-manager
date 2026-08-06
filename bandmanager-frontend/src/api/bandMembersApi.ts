@@ -91,3 +91,22 @@ export const getBandMemberById = async (
 
   return response.json()
 }
+
+export const deleteBandMember = async (
+  token: string,
+  memberId: string,
+): Promise<void> => {
+  const response = await fetch(
+    `${API_BASE_URL}/band-members/${memberId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to delete band member')
+  }
+}
