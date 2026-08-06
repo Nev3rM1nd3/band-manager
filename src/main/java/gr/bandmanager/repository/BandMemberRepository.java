@@ -28,4 +28,6 @@ public interface BandMemberRepository extends JpaRepository<BandMember, UUID> {
             UUID bandId,
             BandRole bandRole
     );
+
+    void deleteAllByBandId(UUID bandId);
 }

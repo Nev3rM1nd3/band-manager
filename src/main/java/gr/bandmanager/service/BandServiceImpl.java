@@ -104,6 +104,7 @@ public class BandServiceImpl implements IBandService {
             throw new BandAccessDeniedException();
         }
 
+        bandMemberRepository.deleteAllByBandId(id);
         bandRepository.delete(band);
     }
 
