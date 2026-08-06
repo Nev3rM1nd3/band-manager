@@ -4,9 +4,12 @@ import { loginSchema, type LoginFormData } from '../schemas/authSchema'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { loginUser } from '../api/authApi'
+import { useAuth } from '../context/AuthContext'
+import { Link } from 'react-router'
 
 const LoginPage = () => {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [loginError, setLoginError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const {
@@ -24,7 +27,7 @@ const LoginPage = () => {
 
       const response = await loginUser(data)
 
-      localStorage.setItem('token', response.token)
+      login(response.token)
 
       navigate('/')
     } catch {
@@ -104,6 +107,16 @@ const LoginPage = () => {
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
       </form>
+
+      <p className="mt-6 text-center text-sm text-slate-400">
+        Don&apos;t have an account?{' '}
+        <Link
+          to="/register"
+          className="font-medium text-violet-400 hover:text-violet-300"
+        >
+          Register
+        </Link>
+      </p>
     </>
   )
 }
