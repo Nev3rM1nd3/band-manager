@@ -10,6 +10,7 @@ import BandDetailsPage from '../pages/BandDetailsPage'
 import AppLayout from '../layouts/AppLayout'
 import CreateBandMemberPage from '../pages/CreateBandMemberPage'
 import EditBandMemberPage from '../pages/EditBandMemberPage'
+import EditBandPage from '../pages/EditBandPage'
 
 const AppRouter = () => {
   return (
@@ -23,6 +24,7 @@ const AppRouter = () => {
             <Route path="/bands/:bandId" element={<BandDetailsPage />} />
             <Route path="/bands/:bandId/members/new" element={<CreateBandMemberPage />}/>
             <Route path="/bands/:bandId/members/:memberId/edit" element={<EditBandMemberPage />}/>
+            <Route path="/bands/:bandId/edit" element={<EditBandPage />}/>
           </Route>
         </Route>
 

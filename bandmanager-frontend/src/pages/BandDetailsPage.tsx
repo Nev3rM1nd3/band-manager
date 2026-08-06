@@ -133,6 +133,13 @@ const BandDetailsPage = () => {
                   ))}
                 </div>
               )}
+
+              <Link
+                to={`/bands/${bandId}/edit`}
+                className="mt-6 inline-block text-sm text-violet-300 hover:text-violet-200"
+              >
+                Edit Band
+              </Link>
             </section>
           )}
           <section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
