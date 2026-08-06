@@ -2,10 +2,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormData } from '../schemas/authSchema'
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { loginUser } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
-import { Link } from 'react-router'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -29,7 +28,7 @@ const LoginPage = () => {
 
       login(response.token)
 
-      navigate('/')
+      navigate('/bands')
     } catch {
       setLoginError('Invalid email or password')
     } finally {

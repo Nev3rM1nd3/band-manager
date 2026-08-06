@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import {
   registerSchema,
   type RegisterFormData,
 } from '../schemas/authSchema'
 import { registerUser } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
-import { Link } from 'react-router'
 
 const RegisterPage = () => {
   const navigate = useNavigate()
@@ -34,7 +33,7 @@ const RegisterPage = () => {
 
       login(response.token)
 
-      navigate('/')
+      navigate('/bands')
     } catch {
       setRegisterError('Registration failed')
     } finally {
