@@ -80,3 +80,19 @@ export const updateBand = async (
 
   return response.json()
 }
+
+export const deleteBand = async (
+  token: string,
+  bandId: string,
+): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/bands/${bandId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to delete band')
+  }
+}

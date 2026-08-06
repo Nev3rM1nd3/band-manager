@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
-import { getBandById } from '../api/bandsApi'
+import { Link, useNavigate, useParams } from 'react-router'
+import {
+  deleteBand,
+  getBandById,
+} from '../api/bandsApi'
 import { useAuth } from '../context/AuthContext'
 import type { Band } from '../types/BandTypes'
 import {
@@ -12,6 +15,7 @@ import type { BandMember } from '../types/BandMemberTypes'
 const BandDetailsPage = () => {
   const { bandId } = useParams()
   const { token } = useAuth()
+  const navigate = useNavigate()
 
   const [band, setBand] = useState<Band | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -20,6 +24,7 @@ const BandDetailsPage = () => {
   const [membersLoading, setMembersLoading] = useState(true)
   const [membersError, setMembersError] = useState('')
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null)
+  const [isDeletingBand, setIsDeletingBand] = useState(false)
 
   useEffect(() => {
     const loadBand = async () => {
@@ -84,6 +89,34 @@ const BandDetailsPage = () => {
     }
   }
 
+  const handleDeleteBand = async () => {
+    if (!token || !bandId) {
+      setError('Band not found')
+      return
+    }
+
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this band?',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setError('')
+      setIsDeletingBand(true)
+
+      await deleteBand(token, bandId)
+
+      navigate('/bands')
+    } catch {
+      setError('Failed to delete band')
+    } finally {
+      setIsDeletingBand(false)
+    }
+  }
+
   return (
     <>
       <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
@@ -140,6 +173,15 @@ const BandDetailsPage = () => {
               >
                 Edit Band
               </Link>
+
+              <button
+                type="button"
+                onClick={handleDeleteBand}
+                disabled={isDeletingBand}
+                className="ml-4 text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isDeletingBand ? 'Deleting...' : 'Delete Band'}
+              </button>
             </section>
           )}
           <section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
