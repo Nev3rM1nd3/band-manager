@@ -7,16 +7,21 @@ import ProtectedRoute from './ProtectedRoute'
 import BandsPage from '../pages/BandsPage'
 import CreateBandPage from '../pages/CreateBandPage'
 import BandDetailsPage from '../pages/BandDetailsPage'
+import AppLayout from '../layouts/AppLayout'
+import CreateBandMemberPage from '../pages/CreateBandMemberPage'
 
 const AppRouter = () => {
   return (
     <>
       <Routes>
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/bands" element={<BandsPage />} />
-          <Route path="/bands/new" element={<CreateBandPage />} />
-          <Route path="/bands/:bandId" element={<BandDetailsPage />} />
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/bands" element={<BandsPage />} />
+            <Route path="/bands/new" element={<CreateBandPage />} />
+            <Route path="/bands/:bandId" element={<BandDetailsPage />} />
+            <Route path="/bands/:bandId/members/new" element={<CreateBandMemberPage />}/>
+          </Route>
         </Route>
 
         <Route element={<AuthLayout />}>
