@@ -147,9 +147,18 @@ const BandDetailsPage = () => {
                         </p>
                       </div>
 
-                      <span className="rounded-full bg-violet-600/20 px-3 py-1 text-xs text-violet-300">
-                        {member.bandRole}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="rounded-full bg-violet-600/20 px-3 py-1 text-xs text-violet-300">
+                          {member.bandRole}
+                        </span>
+
+                        <Link
+                          to={`/bands/${bandId}/members/${member.id}/edit`}
+                          className="text-sm text-violet-300 hover:text-violet-200"
+                        >
+                          Edit
+                        </Link>
+                      </div>
                     </div>
 
                     {member.instruments.length > 0 && (
