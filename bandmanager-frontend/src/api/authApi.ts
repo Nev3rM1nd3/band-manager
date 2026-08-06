@@ -1,4 +1,7 @@
-import type { LoginFormData } from '../schemas/authSchema'
+import type {
+  LoginFormData,
+  RegisterFormData,
+} from '../schemas/authSchema'
 
 type AuthResponse = {
   token: string
@@ -19,6 +22,24 @@ export const loginUser = async (
 
   if (!response.ok) {
     throw new Error('Invalid email or password')
+  }
+
+  return response.json()
+}
+
+export const registerUser = async (
+  userData: RegisterFormData,
+): Promise<AuthResponse> => {
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
+  })
+
+  if (!response.ok) {
+    throw new Error('Registration failed')
   }
 
   return response.json()
