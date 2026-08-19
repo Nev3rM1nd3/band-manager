@@ -11,7 +11,10 @@ import {
   getBandMembers,
 } from '../api/bandMembersApi'
 import type {BandMember} from '../types/BandMemberTypes'
-import {getSongsByBandId} from "../api/songsApi";
+import {
+  deleteSong,
+  getSongsByBandId,
+} from '../api/songsApi'
 import type {Song} from "../types/SongTypes";
 
 const BandDetailsPage = () => {
@@ -30,6 +33,7 @@ const BandDetailsPage = () => {
   const [songs, setSongs] = useState<Song[]>([])
   const [songsLoading, setSongsLoading] = useState(true)
   const [songsError, setSongsError] = useState('')
+  const [deletingSongId, setDeletingSongId] = useState<string | null>(null)
 
   useEffect(() => {
     const loadBand = async () => {
@@ -126,6 +130,36 @@ const BandDetailsPage = () => {
       setError('Failed to delete band')
     } finally {
       setIsDeletingBand(false)
+    }
+  }
+
+  const handleDeleteSong = async (songId: string) => {
+    if (!token) {
+      setSongsError('You are not authenticated')
+      return
+    }
+
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this song?',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setSongsError('')
+      setDeletingSongId(songId)
+
+      await deleteSong(token, songId)
+
+      setSongs((currentSongs) =>
+        currentSongs.filter((song) => song.id !== songId),
+      )
+    } catch {
+      setSongsError('Failed to delete song')
+    } finally {
+      setDeletingSongId(null)
     }
   }
 
@@ -319,28 +353,46 @@ const BandDetailsPage = () => {
                         </p>
                       </div>
 
-                      <span className="rounded-full bg-violet-600/20 px-3 py-1 text-xs text-violet-300">
-                        {song.songStatus}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="rounded-full bg-violet-600/20 px-3 py-1 text-xs text-violet-300">
+                          {song.songStatus}
+                        </span>
+
+                        <Link
+                          to={`/bands/${bandId}/songs/${song.id}/edit`}
+                          className="text-sm text-violet-300 hover:text-violet-200"
+                        >
+                          Edit
+                        </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSong(song.id)}
+                          disabled={deletingSongId === song.id}
+                          className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {deletingSongId === song.id ? 'Deleting...' : 'Delete'}
+                        </button>
+                      </div>
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-4 text-sm text-slate-300">
                       {song.bpm && (
                         <span>
-                BPM: {song.bpm}
-              </span>
+                          BPM: {song.bpm}
+                        </span>
                       )}
 
                       {song.songKey && (
                         <span>
-                Key: {song.songKey}
-              </span>
+                          Key: {song.songKey}
+                        </span>
                       )}
 
                       {song.durationSeconds && (
                         <span>
-                Duration: {(song.durationSeconds / 60).toFixed(1)} min
-              </span>
+                          Duration: {(song.durationSeconds / 60).toFixed(1)} min
+                        </span>
                       )}
                     </div>
 
