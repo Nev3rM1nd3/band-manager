@@ -16,6 +16,7 @@ import EditSongPage from "../pages/EditSongPage";
 import CreateRehearsalPage from "../pages/CreateRehearsalPage";
 import EditRehearsalPage from "../pages/EditRehearsalPage";
 import AddRehearsalSongPage from "../pages/AddRehearsalSongPage";
+import EditRehearsalSongPage from "../pages/EditRehearsalSongPage";
 
 const AppRouter = () => {
   return (
@@ -35,6 +36,7 @@ const AppRouter = () => {
             <Route path="/bands/:bandId/rehearsals/new" element={<CreateRehearsalPage />}/>
             <Route path="/bands/:bandId/rehearsals/:rehearsalId/edit" element={<EditRehearsalPage />}/>
             <Route path="/bands/:bandId/rehearsals/:rehearsalId/songs/new" element={<AddRehearsalSongPage />}/>
+            <Route path="/bands/:bandId/rehearsal-songs/:rehearsalSongId/edit" element={<EditRehearsalSongPage />}/>
           </Route>
         </Route>
 
