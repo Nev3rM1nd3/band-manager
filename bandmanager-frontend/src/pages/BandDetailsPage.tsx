@@ -21,6 +21,8 @@ import {
   deleteRehearsal,
   getRehearsalsByBandId,
 } from '../api/rehearsalsApi'
+import {RehearsalSong} from "../types/RehearsalSongTypes";
+import {getRehearsalSongsByRehearsalId} from "../api/rehearsalSongsApi";
 
 const BandDetailsPage = () => {
   const {bandId} = useParams()
@@ -42,8 +44,8 @@ const BandDetailsPage = () => {
   const [rehearsals, setRehearsals] = useState<Rehearsal[]>([])
   const [rehearsalsLoading, setRehearsalsLoading] = useState(true)
   const [rehearsalsError, setRehearsalsError] = useState('')
-  const [deletingRehearsalId, setDeletingRehearsalId] =
-    useState<string | null>(null)
+  const [deletingRehearsalId, setDeletingRehearsalId] = useState<string | null>(null)
+  const [rehearsalSongs, setRehearsalSongs] = useState<Record<string, RehearsalSong[]>>({})
 
   useEffect(() => {
     const loadBand = async () => {
@@ -65,11 +67,26 @@ const BandDetailsPage = () => {
         const membersData = await getBandMembers(token, bandId)
         const songsData = await getSongsByBandId(token, bandId)
         const rehearsalsData = await getRehearsalsByBandId(token, bandId)
+        const rehearsalSongsEntries = await Promise.all(
+          rehearsalsData.map(async (rehearsal) => {
+            const songs = await getRehearsalSongsByRehearsalId(
+              token,
+              rehearsal.id,
+            )
+
+            return [rehearsal.id, songs] as const
+          }),
+        )
+
+        const rehearsalSongsData = Object.fromEntries(
+          rehearsalSongsEntries,
+        )
 
         setBand(data)
         setMembers(membersData)
         setSongs(songsData)
         setRehearsals(rehearsalsData)
+        setRehearsalSongs(rehearsalSongsData)
 
       } catch {
         setError('Failed to load band')
@@ -548,6 +565,57 @@ const BandDetailsPage = () => {
                         {rehearsal.notes}
                       </p>
                     )}
+
+                    <Link
+                      to={`/bands/${bandId}/rehearsals/${rehearsal.id}/songs/new`}
+                      className="mt-4 inline-block text-sm text-violet-300 hover:text-violet-200"
+                    >
+                      Add Song
+                    </Link>
+
+                    <div className="mt-4">
+                      <h4 className="text-sm font-semibold text-slate-200">
+                        Songs
+                      </h4>
+
+                      {!rehearsalSongs[rehearsal.id] ||
+                      rehearsalSongs[rehearsal.id].length === 0 ? (
+                        <p className="mt-2 text-sm text-slate-500">
+                          No songs assigned.
+                        </p>
+                      ) : (
+                        <div className="mt-3 space-y-2">
+                          {rehearsalSongs[rehearsal.id].map((rehearsalSong) => (
+                            <div
+                              key={rehearsalSong.id}
+                              className="rounded-lg border border-slate-800 bg-slate-900 p-3"
+                            >
+                              <div className="flex items-start justify-between gap-4">
+                                <div>
+                                  <p className="font-medium">
+                                    {rehearsalSong.songTitle}
+                                  </p>
+
+                                  <p className="text-sm text-slate-400">
+                                    {rehearsalSong.songArtist}
+                                  </p>
+                                </div>
+
+                                <span className="rounded-full bg-violet-600/20 px-3 py-1 text-xs text-violet-300">
+                                  {rehearsalSong.rehearsalSongStatus}
+                                </span>
+                              </div>
+
+                              {rehearsalSong.notes && (
+                                <p className="mt-2 text-sm text-slate-400">
+                                  {rehearsalSong.notes}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </article>
                 ))}
               </div>
