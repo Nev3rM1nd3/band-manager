@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import {useEffect, useState} from 'react'
+import {Link, useNavigate, useParams} from 'react-router'
 import {
   deleteBand,
   getBandById,
 } from '../api/bandsApi'
-import { useAuth } from '../context/AuthContext'
-import type { Band } from '../types/BandTypes'
+import {useAuth} from '../context/AuthContext'
+import type {Band} from '../types/BandTypes'
 import {
   deleteBandMember,
   getBandMembers,
 } from '../api/bandMembersApi'
-import type { BandMember } from '../types/BandMemberTypes'
+import type {BandMember} from '../types/BandMemberTypes'
+import {getSongsByBandId} from "../api/songsApi";
+import type {Song} from "../types/SongTypes";
 
 const BandDetailsPage = () => {
-  const { bandId } = useParams()
-  const { token } = useAuth()
+  const {bandId} = useParams()
+  const {token} = useAuth()
   const navigate = useNavigate()
 
   const [band, setBand] = useState<Band | null>(null)
@@ -25,6 +27,9 @@ const BandDetailsPage = () => {
   const [membersError, setMembersError] = useState('')
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null)
   const [isDeletingBand, setIsDeletingBand] = useState(false)
+  const [songs, setSongs] = useState<Song[]>([])
+  const [songsLoading, setSongsLoading] = useState(true)
+  const [songsError, setSongsError] = useState('')
 
   useEffect(() => {
     const loadBand = async () => {
@@ -39,18 +44,25 @@ const BandDetailsPage = () => {
         setError('')
         setMembersLoading(true)
         setMembersError('')
+        setSongsLoading(true)
+        setSongsError('')
 
         const data = await getBandById(token, bandId)
         const membersData = await getBandMembers(token, bandId)
+        const songsData = await getSongsByBandId(token, bandId)
 
         setBand(data)
         setMembers(membersData)
+        setSongs(songsData)
+
       } catch {
         setError('Failed to load band')
         setMembersError('Failed to load band members')
+        setSongsError('Failed to load songs')
       } finally {
         setIsLoading(false)
         setMembersLoading(false)
+        setSongsLoading(false)
       }
     }
 
@@ -249,12 +261,6 @@ const BandDetailsPage = () => {
                       </div>
                     </div>
 
-                    {membersError && (
-                      <p className="mt-4 rounded-lg border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
-                        {membersError}
-                      </p>
-                    )}
-
                     {member.instruments.length > 0 && (
                       <p className="mt-4 text-sm text-slate-300">
                         {member.instruments.join(', ')}
@@ -263,6 +269,95 @@ const BandDetailsPage = () => {
                   </article>
                 ))}
               </div>
+            )}
+            {membersError && (
+              <p className="mt-4 rounded-lg border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
+                {membersError}
+              </p>
+            )}
+          </section>
+
+          <section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="text-2xl font-semibold">
+              Songs
+            </h2>
+
+            <Link
+              to={`/bands/${bandId}/songs/new`}
+              className="mt-4 inline-block rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold hover:bg-violet-500"
+            >
+              Add Song
+            </Link>
+
+            {songsLoading && (
+              <p className="mt-4 text-slate-400">
+                Loading songs...
+              </p>
+            )}
+
+            {!songsLoading && songs.length === 0 && (
+              <p className="mt-4 text-slate-400">
+                No songs found.
+              </p>
+            )}
+
+            {!songsLoading && songs.length > 0 && (
+              <div className="mt-6 space-y-4">
+                {songs.map((song) => (
+                  <article
+                    key={song.id}
+                    className="rounded-xl border border-slate-800 bg-slate-950 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="font-semibold">
+                          {song.title}
+                        </h3>
+
+                        <p className="mt-1 text-sm text-slate-400">
+                          {song.artist}
+                        </p>
+                      </div>
+
+                      <span className="rounded-full bg-violet-600/20 px-3 py-1 text-xs text-violet-300">
+                        {song.songStatus}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-4 text-sm text-slate-300">
+                      {song.bpm && (
+                        <span>
+                BPM: {song.bpm}
+              </span>
+                      )}
+
+                      {song.songKey && (
+                        <span>
+                Key: {song.songKey}
+              </span>
+                      )}
+
+                      {song.durationSeconds && (
+                        <span>
+                Duration: {(song.durationSeconds / 60).toFixed(1)} min
+              </span>
+                      )}
+                    </div>
+
+                    {song.notes && (
+                      <p className="mt-4 text-sm text-slate-400">
+                        {song.notes}
+                      </p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {songsError && (
+              <p className="mt-4 rounded-lg border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
+                {songsError}
+              </p>
             )}
           </section>
         </div>
