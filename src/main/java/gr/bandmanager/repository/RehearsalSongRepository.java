@@ -11,4 +11,5 @@ public interface RehearsalSongRepository extends JpaRepository<RehearsalSong, UU
     List<RehearsalSong> findByRehearsalId(UUID rehearsalId);
 
     boolean existsByRehearsalIdAndSongId(UUID rehearsalId, UUID songId);
-}
+
+    void deleteAllByRehearsalBandId(UUID bandId);}

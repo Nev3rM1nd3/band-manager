@@ -11,4 +11,6 @@ public interface SongRepository extends JpaRepository<Song, UUID> {
     List<Song> findByBandId(UUID bandId);
 
     List<Song> findByBandIdAndTitleContainingIgnoreCase(UUID bandId, String title);
+
+    void deleteAllByBandId(UUID bandId);
 }

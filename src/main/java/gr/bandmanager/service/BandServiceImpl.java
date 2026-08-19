@@ -10,8 +10,7 @@ import gr.bandmanager.model.Band;
 import gr.bandmanager.model.BandMember;
 import gr.bandmanager.model.User;
 import gr.bandmanager.model.enums.BandRole;
-import gr.bandmanager.repository.BandMemberRepository;
-import gr.bandmanager.repository.BandRepository;
+import gr.bandmanager.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +27,9 @@ public class BandServiceImpl implements IBandService {
     private final IBandAccessService bandAccessService;
     private final BandMemberRepository bandMemberRepository;
     private final ICurrentUserService currentUserService;
+    private final RehearsalSongRepository rehearsalSongRepository;
+    private final RehearsalRepository rehearsalRepository;
+    private final SongRepository songRepository;
 
     @Override
     @Transactional
@@ -104,7 +106,11 @@ public class BandServiceImpl implements IBandService {
             throw new BandAccessDeniedException();
         }
 
+        rehearsalSongRepository.deleteAllByRehearsalBandId(id);
+        rehearsalRepository.deleteAllByBandId(id);
+        songRepository.deleteAllByBandId(id);
         bandMemberRepository.deleteAllByBandId(id);
+
         bandRepository.delete(band);
     }
 

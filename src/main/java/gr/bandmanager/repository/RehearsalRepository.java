@@ -15,4 +15,6 @@ public interface RehearsalRepository extends JpaRepository<Rehearsal, UUID> {
             UUID bandId,
             Instant startsAt
     );
+
+    void deleteAllByBandId(UUID bandId);
 }
