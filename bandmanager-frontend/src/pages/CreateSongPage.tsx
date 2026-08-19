@@ -227,18 +227,19 @@ const CreateSongPage = () => {
 
             <div>
               <label
-                htmlFor="durationMinutes"
+                htmlFor="duration"
                 className="mb-2 block text-sm font-medium"
               >
-                Duration in minutes
+                Duration
               </label>
 
               <input
-                id="durationSeconds"
-                type="number"
+                id="duration"
+                type="text"
+                placeholder="4:12"
                 {...register('duration', {
                   setValueAs: (value) =>
-                    value === '' ? null : Number(value),
+                    value === '' ? null : value,
                 })}
                 className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 outline-none focus:border-violet-500"
               />
