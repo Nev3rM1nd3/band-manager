@@ -22,7 +22,10 @@ import {
   getRehearsalsByBandId,
 } from '../api/rehearsalsApi'
 import {RehearsalSong} from "../types/RehearsalSongTypes";
-import {getRehearsalSongsByRehearsalId} from "../api/rehearsalSongsApi";
+import {
+  deleteRehearsalSong,
+  getRehearsalSongsByRehearsalId,
+} from '../api/rehearsalSongsApi'
 
 const BandDetailsPage = () => {
   const {bandId} = useParams()
@@ -46,6 +49,8 @@ const BandDetailsPage = () => {
   const [rehearsalsError, setRehearsalsError] = useState('')
   const [deletingRehearsalId, setDeletingRehearsalId] = useState<string | null>(null)
   const [rehearsalSongs, setRehearsalSongs] = useState<Record<string, RehearsalSong[]>>({})
+  const [deletingRehearsalSongId, setDeletingRehearsalSongId] =
+    useState<string | null>(null)
 
   useEffect(() => {
     const loadBand = async () => {
@@ -224,6 +229,45 @@ const BandDetailsPage = () => {
       setRehearsalsError('Failed to delete rehearsal')
     } finally {
       setDeletingRehearsalId(null)
+    }
+  }
+
+  const handleDeleteRehearsalSong = async (
+    rehearsalId: string,
+    rehearsalSongId: string,
+  ) => {
+    if (!token) {
+      setRehearsalsError('You are not authenticated')
+      return
+    }
+
+    const confirmed = window.confirm(
+      'Are you sure you want to remove this song from the rehearsal?',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setRehearsalsError('')
+      setDeletingRehearsalSongId(rehearsalSongId)
+
+      await deleteRehearsalSong(token, rehearsalSongId)
+
+      setRehearsalSongs((current) => ({
+        ...current,
+        [rehearsalId]: current[rehearsalId].filter(
+          (rehearsalSong) =>
+            rehearsalSong.id !== rehearsalSongId,
+        ),
+      }))
+    } catch {
+      setRehearsalsError(
+        'Failed to remove song from rehearsal',
+      )
+    } finally {
+      setDeletingRehearsalSongId(null)
     }
   }
 
@@ -604,6 +648,32 @@ const BandDetailsPage = () => {
                                 <span className="rounded-full bg-violet-600/20 px-3 py-1 text-xs text-violet-300">
                                   {rehearsalSong.rehearsalSongStatus}
                                 </span>
+
+                                <Link
+                                  to={`/bands/${bandId}/rehearsal-songs/${rehearsalSong.id}/edit`}
+                                  className="text-sm text-violet-300 hover:text-violet-200"
+                                >
+                                  Edit
+                                </Link>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleDeleteRehearsalSong(
+                                      rehearsal.id,
+                                      rehearsalSong.id,
+                                    )
+                                  }
+                                  disabled={
+                                    deletingRehearsalSongId === rehearsalSong.id
+                                  }
+                                  className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  {deletingRehearsalSongId === rehearsalSong.id
+                                    ? 'Removing...'
+                                    : 'Remove'}
+                                </button>
+
                               </div>
 
                               {rehearsalSong.notes && (
