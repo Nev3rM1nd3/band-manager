@@ -438,7 +438,9 @@ const BandDetailsPage = () => {
 
                       {song.durationSeconds && (
                         <span>
-                          Duration: {(song.durationSeconds / 60).toFixed(1)} min
+                          Duration:{' '}
+                          {Math.floor(song.durationSeconds / 60)}:
+                          {String(song.durationSeconds % 60).padStart(2, '0')}
                         </span>
                       )}
                     </div>

@@ -53,10 +53,12 @@ const EditSongPage = () => {
           notes: data.notes ?? '',
           bpm: data.bpm,
           songKey: data.songKey ?? '',
-          durationMinutes:
+          duration:
             data.durationSeconds === null
               ? null
-              : data.durationSeconds / 60,
+              : `${Math.floor(data.durationSeconds / 60)}:${String(
+                data.durationSeconds % 60,
+              ).padStart(2, '0')}`,
         })
       } catch {
         setError('Failed to load song')
@@ -85,9 +87,12 @@ const EditSongPage = () => {
         bpm: data.bpm,
         songKey: data.songKey,
         durationSeconds:
-          data.durationMinutes === null
+          data.duration === null
             ? null
-            : Math.round(data.durationMinutes * 60),
+            : (() => {
+              const [minutes, seconds] = data.duration.split(':').map(Number)
+              return minutes * 60 + seconds
+            })(),
       })
 
       navigate(`/bands/${bandId}`)
@@ -244,26 +249,26 @@ const EditSongPage = () => {
 
               <div>
                 <label
-                  htmlFor="durationMinutes"
+                  htmlFor="duration"
                   className="mb-2 block text-sm font-medium"
                 >
-                  Duration in minutes
+                  Duration
                 </label>
 
                 <input
-                  id="durationMinutes"
-                  type="number"
-                  step="0.1"
-                  {...register('durationMinutes', {
+                  id="duration"
+                  type="text"
+                  placeholder="4:32"
+                  {...register('duration', {
                     setValueAs: (value) =>
-                      value === '' ? null : Number(value),
+                      value === '' ? null : value,
                   })}
                   className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 outline-none focus:border-violet-500"
                 />
 
-                {errors.durationMinutes && (
+                {errors.duration && (
                   <p className="mt-2 text-sm text-red-400">
-                    {errors.durationMinutes.message}
+                    {errors.duration.message}
                   </p>
                 )}
               </div>

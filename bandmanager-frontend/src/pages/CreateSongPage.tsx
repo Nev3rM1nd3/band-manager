@@ -32,8 +32,7 @@ const CreateSongPage = () => {
       notes: '',
       bpm: null,
       songKey: '',
-      durationMinutes: null,
-    },
+      duration: null    },
   })
 
   const onSubmit = async (data: CreateSongFormData) => {
@@ -53,9 +52,12 @@ const CreateSongPage = () => {
         bpm: data.bpm,
         songKey: data.songKey,
         durationSeconds:
-          data.durationMinutes === null
+          data.duration === null
             ? null
-            : Math.round(data.durationMinutes * 60),
+            : (() => {
+              const [minutes, seconds] = data.duration.split(':').map(Number)
+              return minutes * 60 + seconds
+            })(),
         bandId,
       })
 
@@ -234,16 +236,16 @@ const CreateSongPage = () => {
               <input
                 id="durationSeconds"
                 type="number"
-                {...register('durationMinutes', {
+                {...register('duration', {
                   setValueAs: (value) =>
                     value === '' ? null : Number(value),
                 })}
                 className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 outline-none focus:border-violet-500"
               />
 
-              {errors.durationMinutes && (
+              {errors.duration && (
                 <p className="mt-2 text-sm text-red-400">
-                  {errors.durationMinutes.message}
+                  {errors.duration.message}
                 </p>
               )}
             </div>

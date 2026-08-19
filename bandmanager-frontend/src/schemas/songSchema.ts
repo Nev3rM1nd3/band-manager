@@ -31,9 +31,12 @@ export const createSongSchema = z.object({
     .string()
     .max(20, 'Key must be at most 20 characters'),
 
-  durationMinutes: z
-    .number()
-    .positive('Duration must be greater than 0')
+  duration: z
+    .string()
+    .regex(
+      /^\d+:[0-5]\d$/,
+      'Use duration format mm:ss, for example 4:32',
+    )
     .nullable(),
 })
 
