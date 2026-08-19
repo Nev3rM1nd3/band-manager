@@ -108,3 +108,23 @@ export const deleteRehearsal = async (
     throw new Error('Failed to delete rehearsal')
   }
 }
+
+export const getUpcomingRehearsalsByBandId = async (
+  token: string,
+  bandId: string,
+): Promise<Rehearsal[]> => {
+  const response = await fetch(
+    `${API_URL}/rehearsals/band/${bandId}/upcoming`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch upcoming rehearsals')
+  }
+
+  return response.json()
+}
