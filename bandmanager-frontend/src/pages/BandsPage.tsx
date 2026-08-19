@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { getBands } from '../api/bandsApi'
+import {
+  getBands,
+  searchBands,
+} from '../api/bandsApi'
 import { useAuth } from '../context/AuthContext'
 import type { Band } from '../types/BandTypes'
 
@@ -10,6 +13,7 @@ const BandsPage = () => {
   const [bands, setBands] = useState<Band[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     const loadBands = async () => {
@@ -35,6 +39,38 @@ const BandsPage = () => {
     void loadBands()
   }, [token])
 
+  useEffect(() => {
+    const loadFilteredBands = async () => {
+      if (!token) {
+        return
+      }
+
+      try {
+        setError('')
+        setIsLoading(true)
+
+        if (searchTerm.trim() === '') {
+          const data = await getBands(token)
+          setBands(data)
+          return
+        }
+
+        const data = await searchBands(
+          token,
+          searchTerm.trim(),
+        )
+
+        setBands(data)
+      } catch {
+        setError('Failed to search bands')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    void loadFilteredBands()
+  }, [token, searchTerm])
+
   return (
     <>
       <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
@@ -42,6 +78,17 @@ const BandsPage = () => {
           <h1 className="text-3xl font-bold">
             My Bands
           </h1>
+
+          <div className="mt-6 flex gap-3">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search bands by name"
+              className="mt-6 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-violet-500"
+            />
+
+          </div>
 
           <Link
             to="/bands/new"
