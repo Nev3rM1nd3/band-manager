@@ -4,9 +4,11 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import { getEmailFromToken } from '../utils/jwtUtils'
 
 type AuthContextType = {
   token: string | null
+  userEmail: string | null
   isAuthenticated: boolean
   login: (token: string) => void
   logout: () => void
@@ -23,6 +25,11 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.getItem('token'),
   )
 
+  const userEmail =
+    token === null
+      ? null
+      : getEmailFromToken(token)
+
   const login = (newToken: string) => {
     localStorage.setItem('token', newToken)
     setToken(newToken)
@@ -38,6 +45,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       <AuthContext.Provider
         value={{
           token,
+          userEmail,
           isAuthenticated: Boolean(token),
           login,
           logout,
