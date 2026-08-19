@@ -104,3 +104,24 @@ export const deleteSong = async (
     throw new Error('Failed to delete song')
   }
 }
+
+export const searchSongsByTitle = async (
+  token: string,
+  bandId: string,
+  title: string,
+): Promise<Song[]> => {
+  const response = await fetch(
+    `${API_BASE_URL}/songs/band/${bandId}/search?title=${encodeURIComponent(title)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to search songs')
+  }
+
+  return response.json()
+}
