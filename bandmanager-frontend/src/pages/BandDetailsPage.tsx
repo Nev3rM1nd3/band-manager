@@ -16,12 +16,12 @@ import {
   getSongsByBandId,
 } from '../api/songsApi'
 import type {Song} from "../types/SongTypes";
-import {Rehearsal} from "../types/RehearsalTypes";
+import type {Rehearsal} from "../types/RehearsalTypes";
 import {
   deleteRehearsal,
   getRehearsalsByBandId,
 } from '../api/rehearsalsApi'
-import {RehearsalSong} from "../types/RehearsalSongTypes";
+import type {RehearsalSong} from "../types/RehearsalSongTypes";
 import {
   deleteRehearsalSong,
   getRehearsalSongsByRehearsalId,
@@ -29,7 +29,7 @@ import {
 
 const BandDetailsPage = () => {
   const {bandId} = useParams()
-  const {token} = useAuth()
+  const { token, userEmail } = useAuth()
   const navigate = useNavigate()
 
   const [band, setBand] = useState<Band | null>(null)
@@ -51,6 +51,11 @@ const BandDetailsPage = () => {
   const [rehearsalSongs, setRehearsalSongs] = useState<Record<string, RehearsalSong[]>>({})
   const [deletingRehearsalSongId, setDeletingRehearsalSongId] =
     useState<string | null>(null)
+  const isOwner = members.some(
+    (member) =>
+      member.userEmail === userEmail &&
+      member.bandRole === 'OWNER',
+  )
 
   useEffect(() => {
     const loadBand = async () => {
@@ -321,21 +326,25 @@ const BandDetailsPage = () => {
                 </div>
               )}
 
-              <Link
-                to={`/bands/${bandId}/edit`}
-                className="mt-6 inline-block text-sm text-violet-300 hover:text-violet-200"
-              >
-                Edit Band
-              </Link>
+              {isOwner && (
+                <>
+                  <Link
+                    to={`/bands/${bandId}/edit`}
+                    className="mt-6 inline-block text-sm text-violet-300 hover:text-violet-200"
+                  >
+                    Edit Band
+                  </Link>
 
-              <button
-                type="button"
-                onClick={handleDeleteBand}
-                disabled={isDeletingBand}
-                className="ml-4 text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isDeletingBand ? 'Deleting...' : 'Delete Band'}
-              </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteBand}
+                    disabled={isDeletingBand}
+                    className="ml-4 text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isDeletingBand ? 'Deleting...' : 'Delete Band'}
+                  </button>
+                </>
+              )}
             </section>
           )}
           <section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
@@ -343,12 +352,14 @@ const BandDetailsPage = () => {
               Members
             </h2>
 
-            <Link
-              to={`/bands/${bandId}/members/new`}
-              className="mt-4 inline-block rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold hover:bg-violet-500"
-            >
-              Add Member
-            </Link>
+            {isOwner && (
+              <Link
+                to={`/bands/${bandId}/members/new`}
+                className="mt-4 inline-block rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold hover:bg-violet-500"
+              >
+                Add Member
+              </Link>
+            )}
 
             {membersLoading && (
               <p className="mt-4 text-slate-400">
@@ -385,21 +396,25 @@ const BandDetailsPage = () => {
                           {member.bandRole}
                         </span>
 
-                        <Link
-                          to={`/bands/${bandId}/members/${member.id}/edit`}
-                          className="text-sm text-violet-300 hover:text-violet-200"
-                        >
-                          Edit
-                        </Link>
+                        {isOwner && (
+                          <>
+                            <Link
+                              to={`/bands/${bandId}/members/${member.id}/edit`}
+                              className="text-sm text-violet-300 hover:text-violet-200"
+                            >
+                              Edit
+                            </Link>
 
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteMember(member.id)}
-                          disabled={deletingMemberId === member.id}
-                          className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {deletingMemberId === member.id ? 'Deleting...' : 'Delete'}
-                        </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteMember(member.id)}
+                              disabled={deletingMemberId === member.id}
+                              className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {deletingMemberId === member.id ? 'Deleting...' : 'Delete'}
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
 
@@ -424,12 +439,14 @@ const BandDetailsPage = () => {
               Songs
             </h2>
 
-            <Link
-              to={`/bands/${bandId}/songs/new`}
-              className="mt-4 inline-block rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold hover:bg-violet-500"
-            >
-              Add Song
-            </Link>
+            {isOwner && (
+              <Link
+                to={`/bands/${bandId}/songs/new`}
+                className="mt-4 inline-block rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold hover:bg-violet-500"
+              >
+                Add Song
+              </Link>
+            )}
 
             {songsLoading && (
               <p className="mt-4 text-slate-400">
@@ -466,21 +483,25 @@ const BandDetailsPage = () => {
                           {song.songStatus}
                         </span>
 
-                        <Link
-                          to={`/bands/${bandId}/songs/${song.id}/edit`}
-                          className="text-sm text-violet-300 hover:text-violet-200"
-                        >
-                          Edit
-                        </Link>
+                        {isOwner && (
+                          <>
+                            <Link
+                              to={`/bands/${bandId}/songs/${song.id}/edit`}
+                              className="text-sm text-violet-300 hover:text-violet-200"
+                            >
+                              Edit
+                            </Link>
 
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSong(song.id)}
-                          disabled={deletingSongId === song.id}
-                          className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {deletingSongId === song.id ? 'Deleting...' : 'Delete'}
-                        </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteSong(song.id)}
+                              disabled={deletingSongId === song.id}
+                              className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {deletingSongId === song.id ? 'Deleting...' : 'Delete'}
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
 
@@ -528,12 +549,14 @@ const BandDetailsPage = () => {
               Rehearsals
             </h2>
 
-            <Link
-              to={`/bands/${bandId}/rehearsals/new`}
-              className="mt-4 inline-block rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold hover:bg-violet-500"
-            >
-              Add Rehearsal
-            </Link>
+            {isOwner && (
+              <Link
+                to={`/bands/${bandId}/rehearsals/new`}
+                className="mt-4 inline-block rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold hover:bg-violet-500"
+              >
+                Add Rehearsal
+              </Link>
+            )}
 
             {rehearsalsLoading && (
               <p className="mt-4 text-slate-400">
@@ -567,23 +590,28 @@ const BandDetailsPage = () => {
                       </h3>
 
                       <div className="flex items-center gap-3">
-                        <Link
-                          to={`/bands/${bandId}/rehearsals/${rehearsal.id}/edit`}
-                          className="text-sm text-violet-300 hover:text-violet-200"
-                        >
-                          Edit
-                        </Link>
+                        {isOwner && (
+                          <>
+                            <Link
+                              to={`/bands/${bandId}/rehearsals/${rehearsal.id}/edit`}
+                              className="text-sm text-violet-300 hover:text-violet-200"
+                            >
+                              Edit
+                            </Link>
 
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteRehearsal(rehearsal.id)}
-                          disabled={deletingRehearsalId === rehearsal.id}
-                          className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {deletingRehearsalId === rehearsal.id
-                            ? 'Deleting...'
-                            : 'Delete'}
-                        </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteRehearsal(rehearsal.id)}
+                              disabled={deletingRehearsalId === rehearsal.id}
+                              className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {deletingRehearsalId === rehearsal.id
+                                ? 'Deleting...'
+                                : 'Delete'}
+                            </button>
+                          </>
+                        )}
+
                       </div>
                     </div>
 
@@ -610,12 +638,14 @@ const BandDetailsPage = () => {
                       </p>
                     )}
 
-                    <Link
-                      to={`/bands/${bandId}/rehearsals/${rehearsal.id}/songs/new`}
-                      className="mt-4 inline-block text-sm text-violet-300 hover:text-violet-200"
-                    >
-                      Add Song
-                    </Link>
+                    {isOwner && (
+                      <Link
+                        to={`/bands/${bandId}/rehearsals/${rehearsal.id}/songs/new`}
+                        className="mt-4 inline-block text-sm text-violet-300 hover:text-violet-200"
+                      >
+                        Add Song
+                      </Link>
+                    )}
 
                     <div className="mt-4">
                       <h4 className="text-sm font-semibold text-slate-200">
@@ -649,31 +679,34 @@ const BandDetailsPage = () => {
                                   {rehearsalSong.rehearsalSongStatus}
                                 </span>
 
-                                <Link
-                                  to={`/bands/${bandId}/rehearsal-songs/${rehearsalSong.id}/edit`}
-                                  className="text-sm text-violet-300 hover:text-violet-200"
-                                >
-                                  Edit
-                                </Link>
+                                {isOwner && (
+                                  <>
+                                    <Link
+                                      to={`/bands/${bandId}/rehearsal-songs/${rehearsalSong.id}/edit`}
+                                      className="text-sm text-violet-300 hover:text-violet-200"
+                                    >
+                                      Edit
+                                    </Link>
 
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleDeleteRehearsalSong(
-                                      rehearsal.id,
-                                      rehearsalSong.id,
-                                    )
-                                  }
-                                  disabled={
-                                    deletingRehearsalSongId === rehearsalSong.id
-                                  }
-                                  className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                  {deletingRehearsalSongId === rehearsalSong.id
-                                    ? 'Removing...'
-                                    : 'Remove'}
-                                </button>
-
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleDeleteRehearsalSong(
+                                          rehearsal.id,
+                                          rehearsalSong.id,
+                                        )
+                                      }
+                                      disabled={
+                                        deletingRehearsalSongId === rehearsalSong.id
+                                      }
+                                      className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                      {deletingRehearsalSongId === rehearsalSong.id
+                                        ? 'Removing...'
+                                        : 'Remove'}
+                                    </button>
+                                  </>
+                                )}
                               </div>
 
                               {rehearsalSong.notes && (
