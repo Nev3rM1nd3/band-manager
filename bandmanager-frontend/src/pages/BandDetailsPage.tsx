@@ -16,6 +16,11 @@ import {
   getSongsByBandId,
 } from '../api/songsApi'
 import type {Song} from "../types/SongTypes";
+import {Rehearsal} from "../types/RehearsalTypes";
+import {
+  deleteRehearsal,
+  getRehearsalsByBandId,
+} from '../api/rehearsalsApi'
 
 const BandDetailsPage = () => {
   const {bandId} = useParams()
@@ -34,6 +39,11 @@ const BandDetailsPage = () => {
   const [songsLoading, setSongsLoading] = useState(true)
   const [songsError, setSongsError] = useState('')
   const [deletingSongId, setDeletingSongId] = useState<string | null>(null)
+  const [rehearsals, setRehearsals] = useState<Rehearsal[]>([])
+  const [rehearsalsLoading, setRehearsalsLoading] = useState(true)
+  const [rehearsalsError, setRehearsalsError] = useState('')
+  const [deletingRehearsalId, setDeletingRehearsalId] =
+    useState<string | null>(null)
 
   useEffect(() => {
     const loadBand = async () => {
@@ -54,19 +64,24 @@ const BandDetailsPage = () => {
         const data = await getBandById(token, bandId)
         const membersData = await getBandMembers(token, bandId)
         const songsData = await getSongsByBandId(token, bandId)
+        const rehearsalsData = await getRehearsalsByBandId(token, bandId)
 
         setBand(data)
         setMembers(membersData)
         setSongs(songsData)
+        setRehearsals(rehearsalsData)
 
       } catch {
         setError('Failed to load band')
         setMembersError('Failed to load band members')
         setSongsError('Failed to load songs')
+        setRehearsalsError('Failed to load rehearsals')
+
       } finally {
         setIsLoading(false)
         setMembersLoading(false)
         setSongsLoading(false)
+        setRehearsalsLoading(false)
       }
     }
 
@@ -160,6 +175,38 @@ const BandDetailsPage = () => {
       setSongsError('Failed to delete song')
     } finally {
       setDeletingSongId(null)
+    }
+  }
+
+  const handleDeleteRehearsal = async (rehearsalId: string) => {
+    if (!token) {
+      setRehearsalsError('You are not authenticated')
+      return
+    }
+
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this rehearsal?',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setRehearsalsError('')
+      setDeletingRehearsalId(rehearsalId)
+
+      await deleteRehearsal(token, rehearsalId)
+
+      setRehearsals((currentRehearsals) =>
+        currentRehearsals.filter(
+          (rehearsal) => rehearsal.id !== rehearsalId,
+        ),
+      )
+    } catch {
+      setRehearsalsError('Failed to delete rehearsal')
+    } finally {
+      setDeletingRehearsalId(null)
     }
   }
 
@@ -409,6 +456,104 @@ const BandDetailsPage = () => {
             {songsError && (
               <p className="mt-4 rounded-lg border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
                 {songsError}
+              </p>
+            )}
+          </section>
+
+          <section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="text-2xl font-semibold">
+              Rehearsals
+            </h2>
+
+            <Link
+              to={`/bands/${bandId}/rehearsals/new`}
+              className="mt-4 inline-block rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold hover:bg-violet-500"
+            >
+              Add Rehearsal
+            </Link>
+
+            {rehearsalsLoading && (
+              <p className="mt-4 text-slate-400">
+                Loading rehearsals...
+              </p>
+            )}
+
+            {!rehearsalsLoading && rehearsals.length === 0 && (
+              <p className="mt-4 text-slate-400">
+                No rehearsals found.
+              </p>
+            )}
+
+            {!rehearsalsLoading && rehearsals.length > 0 && (
+              <div className="mt-6 space-y-4">
+                {rehearsals.map((rehearsal) => (
+                  <article
+                    key={rehearsal.id}
+                    className="rounded-xl border border-slate-800 bg-slate-950 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="font-semibold">
+                        {new Date(rehearsal.startsAt).toLocaleString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false,
+                        })}
+                      </h3>
+
+                      <div className="flex items-center gap-3">
+                        <Link
+                          to={`/bands/${bandId}/rehearsals/${rehearsal.id}/edit`}
+                          className="text-sm text-violet-300 hover:text-violet-200"
+                        >
+                          Edit
+                        </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteRehearsal(rehearsal.id)}
+                          disabled={deletingRehearsalId === rehearsal.id}
+                          className="text-sm text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {deletingRehearsalId === rehearsal.id
+                            ? 'Deleting...'
+                            : 'Delete'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {rehearsal.endsAt && (
+                      <p className="mt-2 text-sm text-slate-300">
+                        Ends: {new Date(rehearsal.endsAt).toLocaleString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      })}
+                      </p>
+                    )}
+
+                    <p className="mt-2 text-sm text-slate-300">
+                      Location: {rehearsal.location}
+                    </p>
+
+                    {rehearsal.notes && (
+                      <p className="mt-3 text-sm text-slate-400">
+                        {rehearsal.notes}
+                      </p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {rehearsalsError && (
+              <p className="mt-4 rounded-lg border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
+                {rehearsalsError}
               </p>
             )}
           </section>
