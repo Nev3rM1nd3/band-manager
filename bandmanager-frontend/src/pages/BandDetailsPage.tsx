@@ -13,6 +13,7 @@ import {
 import type {BandMember} from '../types/BandMemberTypes'
 import {
   deleteSong,
+  searchSongsByTitle,
   getSongsByBandId,
 } from '../api/songsApi'
 import type {Song} from "../types/SongTypes";
@@ -56,6 +57,7 @@ const BandDetailsPage = () => {
       member.userEmail === userEmail &&
       member.bandRole === 'OWNER',
   )
+  const [songSearchTerm, setSongSearchTerm] = useState('')
 
   useEffect(() => {
     const loadBand = async () => {
@@ -276,6 +278,39 @@ const BandDetailsPage = () => {
     }
   }
 
+  useEffect(() => {
+    const loadFilteredSongs = async () => {
+      if (!token || !bandId) {
+        return
+      }
+
+      try {
+        setSongsError('')
+        setSongsLoading(true)
+
+        if (songSearchTerm.trim() === '') {
+          const data = await getSongsByBandId(token, bandId)
+          setSongs(data)
+          return
+        }
+
+        const data = await searchSongsByTitle(
+          token,
+          bandId,
+          songSearchTerm.trim(),
+        )
+
+        setSongs(data)
+      } catch {
+        setSongsError('Failed to search songs')
+      } finally {
+        setSongsLoading(false)
+      }
+    }
+
+    void loadFilteredSongs()
+  }, [token, bandId, songSearchTerm])
+
   return (
     <>
       <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
@@ -438,6 +473,14 @@ const BandDetailsPage = () => {
             <h2 className="text-2xl font-semibold">
               Songs
             </h2>
+
+            <input
+              type="text"
+              value={songSearchTerm}
+              onChange={(event) => setSongSearchTerm(event.target.value)}
+              placeholder="Search songs by title"
+              className="mt-6 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-violet-500"
+            />
 
             {isOwner && (
               <Link
