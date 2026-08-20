@@ -7,9 +7,25 @@ export const handleApiResponse = async (
     throw new Error('Unauthorized')
   }
 
-  if (!response.ok) {
+  if (response.status === 403) {
     throw new Error(
-      `Request failed with status ${response.status}`,
+      'You do not have permission to perform this action',
     )
+  }
+
+  if (!response.ok) {
+    let message = `Request failed with status ${response.status}`
+
+    try {
+      const errorData = await response.json()
+
+      if (typeof errorData.message === 'string') {
+        message = errorData.message
+      }
+    } catch {
+      // Keep the fallback message
+    }
+
+    throw new Error(message)
   }
 }
