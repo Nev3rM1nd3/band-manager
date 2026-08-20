@@ -41,8 +41,12 @@ const HomePage = () => {
           )
 
         setUpcomingRehearsals(allUpcomingRehearsals)
-      } catch {
-        setError('Failed to load upcoming rehearsals')
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message)
+        } else {
+          setError('Failed to load upcoming rehearsals')
+        }
       } finally {
         setIsLoading(false)
       }

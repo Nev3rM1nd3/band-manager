@@ -140,10 +140,14 @@ const BandDetailsPage = () => {
       setMembers((currentMembers) =>
         currentMembers.filter((member) => member.id !== memberId),
       )
-    } catch {
-      setMembersError(
-        'This member could not be deleted. The last owner must remain in the band.',
-      )
+    } catch (error) {
+      if (error instanceof Error) {
+        setMembersError(error.message)
+      } else {
+        setMembersError(
+          'This member could not be deleted.',
+        )
+      }
     } finally {
       setDeletingMemberId(null)
     }
@@ -170,8 +174,12 @@ const BandDetailsPage = () => {
       await deleteBand(token, bandId)
 
       navigate('/bands')
-    } catch {
-      setError('Failed to delete band')
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('Failed to delete band')
+      }
     } finally {
       setIsDeletingBand(false)
     }
@@ -200,8 +208,12 @@ const BandDetailsPage = () => {
       setSongs((currentSongs) =>
         currentSongs.filter((song) => song.id !== songId),
       )
-    } catch {
-      setSongsError('Failed to delete song')
+    } catch (error) {
+      if (error instanceof Error) {
+        setSongsError(error.message)
+      } else {
+        setSongsError('Failed to delete song')
+      }
     } finally {
       setDeletingSongId(null)
     }
@@ -232,8 +244,12 @@ const BandDetailsPage = () => {
           (rehearsal) => rehearsal.id !== rehearsalId,
         ),
       )
-    } catch {
-      setRehearsalsError('Failed to delete rehearsal')
+    } catch (error) {
+      if (error instanceof Error) {
+        setRehearsalsError(error.message)
+      } else {
+        setRehearsalsError('Failed to delete rehearsal')
+      }
     } finally {
       setDeletingRehearsalId(null)
     }
@@ -269,10 +285,14 @@ const BandDetailsPage = () => {
             rehearsalSong.id !== rehearsalSongId,
         ),
       }))
-    } catch {
-      setRehearsalsError(
-        'Failed to remove song from rehearsal',
-      )
+    } catch (error) {
+      if (error instanceof Error) {
+        setRehearsalsError(error.message)
+      } else {
+        setRehearsalsError(
+          'Failed to remove song from rehearsal',
+        )
+      }
     } finally {
       setDeletingRehearsalSongId(null)
     }

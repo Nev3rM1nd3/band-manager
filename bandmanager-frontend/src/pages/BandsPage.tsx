@@ -29,8 +29,12 @@ const BandsPage = () => {
         const data = await getBands(token)
 
         setBands(data)
-      } catch {
-        setError('Failed to load bands')
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message)
+        } else {
+          setError('Failed to load bands')
+        }
       } finally {
         setIsLoading(false)
       }
@@ -61,8 +65,12 @@ const BandsPage = () => {
         )
 
         setBands(data)
-      } catch {
-        setError('Failed to search bands')
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message)
+        } else {
+          setError('Failed to search bands')
+        }
       } finally {
         setIsLoading(false)
       }
