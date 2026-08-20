@@ -19,6 +19,7 @@ const EditRehearsalSongPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [apiError, setApiError] = useState('')
 
   useEffect(() => {
     const loadRehearsalSong = async () => {
@@ -56,7 +57,7 @@ const EditRehearsalSongPage = () => {
     }
 
     try {
-      setError('')
+      setApiError('')
       setIsSubmitting(true)
 
       await updateRehearsalSong(token, rehearsalSongId, {
@@ -65,8 +66,12 @@ const EditRehearsalSongPage = () => {
       })
 
       navigate(`/bands/${bandId}`)
-    } catch {
-      setError('Failed to update rehearsal song')
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message)
+      } else {
+        setApiError('Failed to update rehearsal song')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -96,6 +101,12 @@ const EditRehearsalSongPage = () => {
           {error && (
             <p className="mt-6 text-red-400">
               {error}
+            </p>
+          )}
+
+          {apiError && (
+            <p className="mt-6 text-red-400">
+              {apiError}
             </p>
           )}
 

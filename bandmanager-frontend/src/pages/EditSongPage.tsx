@@ -19,6 +19,7 @@ const EditSongPage = () => {
 
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [apiError, setApiError] = useState('')
 
   const {
     register,
@@ -77,7 +78,7 @@ const EditSongPage = () => {
     }
 
     try {
-      setError('')
+      setApiError('')
 
       await updateSong(token, songId, {
         title: data.title,
@@ -96,8 +97,12 @@ const EditSongPage = () => {
       })
 
       navigate(`/bands/${bandId}`)
-    } catch {
-      setError('Failed to update song')
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message)
+      } else {
+        setApiError('Failed to update song')
+      }
     }
   }
 
@@ -125,6 +130,12 @@ const EditSongPage = () => {
           {error && (
             <p className="mt-6 text-red-400">
               {error}
+            </p>
+          )}
+
+          {apiError && (
+            <p className="mt-6 text-red-400">
+              {apiError}
             </p>
           )}
 

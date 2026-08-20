@@ -19,6 +19,7 @@ const EditRehearsalPage = () => {
 
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [apiError, setApiError] = useState('')
 
   const {
     register,
@@ -101,7 +102,7 @@ const EditRehearsalPage = () => {
     }
 
     try {
-      setError('')
+      setApiError('')
 
       await updateRehearsal(token, rehearsalId, {
         startsAt: new Date(
@@ -120,8 +121,12 @@ const EditRehearsalPage = () => {
       })
 
       navigate(`/bands/${bandId}`)
-    } catch {
-      setError('Failed to update rehearsal')
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message)
+      } else {
+        setApiError('Failed to update rehearsal')
+      }
     }
   }
 
@@ -149,6 +154,12 @@ const EditRehearsalPage = () => {
           {error && (
             <p className="mt-6 text-red-400">
               {error}
+            </p>
+          )}
+
+          {apiError && (
+            <p className="mt-6 text-red-400">
+              {apiError}
             </p>
           )}
 

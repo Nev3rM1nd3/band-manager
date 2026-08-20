@@ -34,8 +34,12 @@ const RegisterPage = () => {
       login(response.token)
 
       navigate('/bands')
-    } catch {
-      setRegisterError('Registration failed')
+    } catch (error) {
+      if (error instanceof Error) {
+        setRegisterError(error.message)
+      } else {
+        setRegisterError('Registration failed')
+      }
     } finally {
       setIsLoading(false)
     }

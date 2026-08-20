@@ -14,6 +14,7 @@ const AddRehearsalSongPage = () => {
   const [songs, setSongs] = useState<Song[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [apiError, setApiError] = useState('')
   const [selectedSongId, setSelectedSongId] = useState('')
   const [status, setStatus] =
     useState<RehearsalSongStatus>('NEEDS_WORK')
@@ -47,12 +48,12 @@ const AddRehearsalSongPage = () => {
 
   const handleSubmit = async () => {
     if (!token || !rehearsalId || !selectedSongId) {
-      setError('Please select a song')
+      setApiError('Please select a song')
       return
     }
 
     try {
-      setError('')
+      setApiError('')
       setIsSubmitting(true)
 
       await createRehearsalSong(token, {
@@ -63,8 +64,12 @@ const AddRehearsalSongPage = () => {
       })
 
       navigate(`/bands/${bandId}`)
-    } catch {
-      setError('Failed to add song to rehearsal')
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message)
+      } else {
+        setApiError('Failed to add song to rehearsal')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -94,6 +99,12 @@ const AddRehearsalSongPage = () => {
           {error && (
             <p className="mt-6 text-red-400">
               {error}
+            </p>
+          )}
+
+          {apiError && (
+            <p className="mt-6 text-red-400">
+              {apiError}
             </p>
           )}
 

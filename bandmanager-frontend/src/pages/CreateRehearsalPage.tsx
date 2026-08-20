@@ -62,8 +62,12 @@ const CreateRehearsalPage = () => {
       })
 
       navigate(`/bands/${bandId}`)
-    } catch {
-      setApiError('Failed to create rehearsal')
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message)
+      } else {
+        setApiError('Failed to create rehearsal')
+      }
     }
   }
 

@@ -18,6 +18,7 @@ const EditBandPage = () => {
   const [band, setBand] = useState<Band | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [apiError, setApiError] = useState('')
   const [genresInput, setGenresInput] = useState('')
 
   const {
@@ -76,7 +77,7 @@ const EditBandPage = () => {
       .filter((genre) => genre.length > 0)
 
     try {
-      setError('')
+      setApiError('')
 
       await updateBand(token, bandId, {
         ...data,
@@ -84,8 +85,12 @@ const EditBandPage = () => {
       })
 
       navigate(`/bands/${bandId}`)
-    } catch {
-      setError('Failed to update band')
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message)
+      } else {
+        setApiError('Failed to update band')
+      }
     }
   }
 
@@ -113,6 +118,12 @@ const EditBandPage = () => {
           {error && (
             <p className="mt-6 text-red-400">
               {error}
+            </p>
+          )}
+
+          {apiError && (
+            <p className="mt-6 text-red-400">
+              {apiError}
             </p>
           )}
 

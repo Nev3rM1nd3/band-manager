@@ -21,6 +21,7 @@ const EditBandMemberPage = () => {
   const [member, setMember] = useState<BandMember | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [apiError, setApiError] = useState('')
   const [instrumentsInput, setInstrumentsInput] = useState('')
 
   const {
@@ -80,7 +81,7 @@ const EditBandMemberPage = () => {
       .filter((instrument) => instrument.length > 0)
 
     try {
-      setError('')
+      setApiError('')
 
       await updateBandMember(token, memberId, {
         ...data,
@@ -88,8 +89,12 @@ const EditBandMemberPage = () => {
       })
 
       navigate(`/bands/${bandId}`)
-    } catch {
-      setError('Failed to update band member')
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message)
+      } else {
+        setApiError('Failed to update band member')
+      }
     }
   }
 
@@ -117,6 +122,12 @@ const EditBandMemberPage = () => {
           {error && (
             <p className="mt-6 text-red-400">
               {error}
+            </p>
+          )}
+
+          {apiError && (
+            <p className="mt-6 text-red-400">
+              {apiError}
             </p>
           )}
 

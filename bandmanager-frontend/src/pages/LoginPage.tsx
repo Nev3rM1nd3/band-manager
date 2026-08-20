@@ -29,8 +29,12 @@ const LoginPage = () => {
       login(response.token)
 
       navigate('/bands')
-    } catch {
-      setLoginError('Invalid email or password')
+    } catch (error) {
+      if (error instanceof Error) {
+        setLoginError(error.message)
+      } else {
+        setLoginError('Invalid email or password')
+      }
     } finally {
       setIsLoading(false)
     }

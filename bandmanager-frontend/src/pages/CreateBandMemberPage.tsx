@@ -56,8 +56,12 @@ const CreateBandMemberPage = () => {
       })
 
       navigate(`/bands/${bandId}`)
-    } catch {
-      setApiError('Failed to create band member')
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message)
+      } else {
+        setApiError('Failed to create band member')
+      }
     }
   }
 
@@ -75,6 +79,12 @@ const CreateBandMemberPage = () => {
           <h1 className="mt-6 text-3xl font-bold">
             Add Band Member
           </h1>
+
+          {apiError && (
+            <p className="mt-6 text-red-400">
+              {apiError}
+            </p>
+          )}
 
           <form
             onSubmit={handleSubmit(onSubmit)}

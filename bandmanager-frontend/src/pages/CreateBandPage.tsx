@@ -50,8 +50,12 @@ const CreateBandPage = () => {
         genres,
       })
       navigate('/bands')
-    } catch {
-      setApiError('Failed to create band')
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message)
+      } else {
+        setApiError('Failed to create band')
+      }
     }
   }
 
