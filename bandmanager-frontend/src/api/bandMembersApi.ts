@@ -3,6 +3,7 @@ import type {
   CreateBandMemberData,
   UpdateBandMemberData,
 } from '../types/BandMemberTypes'
+import {handleApiResponse} from "./apiUtils";
 
 const API_BASE_URL = 'http://localhost:8080/api'
 
@@ -20,9 +21,7 @@ export const getBandMembers = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to load band members')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -40,9 +39,7 @@ export const createBandMember = async (
     body: JSON.stringify(memberData),
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to create band member')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -64,9 +61,7 @@ export const updateBandMember = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to update band member')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -85,9 +80,7 @@ export const getBandMemberById = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to load band member')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -106,7 +99,5 @@ export const deleteBandMember = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to delete band member')
-  }
+  await handleApiResponse(response)
 }

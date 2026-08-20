@@ -3,6 +3,7 @@ import type {
   Rehearsal,
   UpdateRehearsalData,
 } from '../types/RehearsalTypes'
+import {handleApiResponse} from "./apiUtils";
 
 const API_URL = 'http://localhost:8080/api'
 
@@ -19,9 +20,7 @@ export const getRehearsalsByBandId = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch rehearsals')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -39,9 +38,7 @@ export const getRehearsalById = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch rehearsal')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -59,9 +56,7 @@ export const createRehearsal = async (
     body: JSON.stringify(rehearsalData),
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to create rehearsal')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -83,9 +78,7 @@ export const updateRehearsal = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to update rehearsal')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -104,9 +97,7 @@ export const deleteRehearsal = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to delete rehearsal')
-  }
+  await handleApiResponse(response)
 }
 
 export const getUpcomingRehearsalsByBandId = async (
@@ -122,9 +113,7 @@ export const getUpcomingRehearsalsByBandId = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch upcoming rehearsals')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }

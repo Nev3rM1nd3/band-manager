@@ -2,6 +2,7 @@ import type {
   Band,
   CreateBandData,
 } from '../types/BandTypes'
+import { handleApiResponse } from './apiUtils'
 
 const API_BASE_URL = 'http://localhost:8080/api'
 
@@ -15,9 +16,7 @@ export const getBands = async (
     },
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to load bands')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -35,9 +34,7 @@ export const createBand = async (
     body: JSON.stringify(bandData),
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to create band')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -53,9 +50,7 @@ export const getBandById = async (
     },
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to load band')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -74,9 +69,7 @@ export const updateBand = async (
     body: JSON.stringify(bandData),
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to update band')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -92,9 +85,7 @@ export const deleteBand = async (
     },
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to delete band')
-  }
+  await handleApiResponse(response)
 }
 
 export const searchBands = async (
@@ -110,9 +101,7 @@ export const searchBands = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to search bands')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }

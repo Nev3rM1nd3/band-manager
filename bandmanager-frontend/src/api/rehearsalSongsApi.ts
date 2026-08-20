@@ -3,6 +3,7 @@ import type {
   RehearsalSong,
   UpdateRehearsalSongData,
 } from '../types/RehearsalSongTypes'
+import {handleApiResponse} from "./apiUtils";
 
 const API_URL = 'http://localhost:8080/api'
 
@@ -19,9 +20,7 @@ export const getRehearsalSongsByRehearsalId = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch rehearsal songs')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -39,9 +38,7 @@ export const getRehearsalSongById = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch rehearsal song')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -62,9 +59,7 @@ export const createRehearsalSong = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to add song to rehearsal')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -86,9 +81,7 @@ export const updateRehearsalSong = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to update rehearsal song')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -107,7 +100,5 @@ export const deleteRehearsalSong = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to remove song from rehearsal')
-  }
+  await handleApiResponse(response)
 }

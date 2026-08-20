@@ -3,6 +3,7 @@ import type {
   Song,
   UpdateSongData,
 } from '../types/SongTypes'
+import {handleApiResponse} from "./apiUtils";
 
 const API_BASE_URL = 'http://localhost:8080/api'
 
@@ -20,9 +21,7 @@ export const getSongsByBandId = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to load songs')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -41,9 +40,7 @@ export const getSongById = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to load song')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -61,9 +58,7 @@ export const createSong = async (
     body: JSON.stringify(songData),
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to create song')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -82,9 +77,7 @@ export const updateSong = async (
     body: JSON.stringify(songData),
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to update song')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
@@ -100,9 +93,7 @@ export const deleteSong = async (
     },
   })
 
-  if (!response.ok) {
-    throw new Error('Failed to delete song')
-  }
+  await handleApiResponse(response)
 }
 
 export const searchSongsByTitle = async (
@@ -119,9 +110,7 @@ export const searchSongsByTitle = async (
     },
   )
 
-  if (!response.ok) {
-    throw new Error('Failed to search songs')
-  }
+  await handleApiResponse(response)
 
   return response.json()
 }
